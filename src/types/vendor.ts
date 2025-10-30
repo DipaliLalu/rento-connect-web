@@ -1,0 +1,21 @@
+export type Vendor = {
+    id?: string | null;
+    name?: string | null;
+    contact?: string;
+    alternativecontact?: string;
+    email?: string;
+    password?: string;
+    category?: string;
+    state?:string;
+    city?:string;
+    pincode?:string;
+    address?: string;
+    gstin?: string;
+    experience?: string;
+    location?: string;
+    availability?: string;
+    active?: string;
+    deleted?: string;
+    id_proof?: any | string;
+    role?: string;
+};
