@@ -66,12 +66,12 @@ const data = {
         {
           title: "Active Vendor List",
           url: "/dashboard/active-vendor",
-          permission: 'subcategory.view'
+          permission: 'vendor.list'
         },
         {
-          title: "Pending Approval Vendor",
+          title: "Pending Vendor List",
           url: "/dashboard/vendor-list",
-          permission: 'subcategory.view'
+          permission: 'vendor.approval'
         },
       ],
     },
@@ -84,12 +84,12 @@ const data = {
         {
           title: "Approval Booking List",
           url: "/dashboard/active-booking",
-          permission: 'subcategory.view'
+          permission: 'booking.list'
         },
         {
-          title: "Pending Approval Booking",
+          title: "Pending Booking List",
           url: "/dashboard/pending-booking-list",
-          permission: 'subcategory.view'
+          permission: 'booking.approval'
         },
       ],
     },

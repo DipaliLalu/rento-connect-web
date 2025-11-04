@@ -28,6 +28,7 @@ import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { activeVendor, useGetVendorList } from "../../../actions/vendor";
 import type { Vendor } from "../../../types/vendor";
+import { getUserInfo } from "../../../utils/utils";
 
 
 export default function VendorList() {
@@ -38,7 +39,11 @@ export default function VendorList() {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const { vendor, isLoading, mutate } = useGetVendorList();
+     const user = getUserInfo();
+    const categoryParam = Array.isArray(user?.data.roles)
+        ? user?.data.roles.join(',').toLowerCase() // e.g. ["HR", "Admin"] → "HR,Admin"
+        : user?.data.roles;
+    const { vendor, isLoading, mutate } = useGetVendorList(categoryParam);
     // const navigate = useNavigate();
 
     // 🧹 Deletion logic (with revalidation)
@@ -101,7 +106,7 @@ export default function VendorList() {
             accessorKey: "active",
             header: () => <div>Status</div>,
             cell: ({ row }) => {
-                 const vendor = row.original;
+                const vendor = row.original;
                 const isActive = row.getValue("active") == 1;
                 return (
                     <Button
@@ -109,7 +114,7 @@ export default function VendorList() {
                             ? "bg-green-500 hover:bg-green-600"
                             : "bg-red-500 hover:bg-red-600"
                             }`}
-                       onClick={() => handleActiveVendor(Number(vendor.id))}
+                        onClick={() => handleActiveVendor(Number(vendor.id))}
                     >
                         {isActive ? "Active" : "Inactive"}
                     </Button>

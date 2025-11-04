@@ -17,7 +17,6 @@ function Header({ }: HeaderProps) {
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const user = getVendorInfo();
-    console.log(user)
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -59,28 +58,35 @@ function Header({ }: HeaderProps) {
                 </div>
 
                 {/* Desktop Buttons */}
-                {user?.role == "customer" ? <UserDropdown />:
-                <div className="hidden md:flex items-center gap-3">
-                    <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
-                        <Link to={'login'}>
-                            Login</Link>
-                    </Button>
-                    <Button className="bg-orange-500 text-white hover:bg-orange-600">
-                        <Link to={'vendor-register'}>
-                            Become a Vendor
-                        </Link>
-                    </Button>
+                <div className="flex gap-4">
+                    {user?.role == "customer" || user?.role == "vendor" ? <UserDropdown /> :
+                        <div className="hidden md:flex items-center gap-3">
+                            <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
+                                <Link to={'login'}>
+                                    Login</Link>
+                            </Button>
+                            <Button className="bg-orange-500 text-white hover:bg-orange-600">
+                                <Link to={'vendor-register'}>
+                                    Become a Vendor
+                                </Link>
+                            </Button>
+                        </div>
+                    }
+                    <button
+                        className="md:hidden flex items-center text-orange-600"
+                        onClick={() => setOpen((prev) => !prev)}
+                    >
+                        {open ? <X size={26} /> : <Menu size={26} />}
+                    </button>
                 </div>
-                }
-
                 {/* Mobile Toggle */}
-                {!user && 
-                <button
-                    className="md:hidden flex items-center text-orange-600"
-                    onClick={() => setOpen((prev) => !prev)}
-                >
-                    {open ? <X size={26} /> : <Menu size={26} />}
-                </button>}
+                {!user &&
+                    <button
+                        className="md:hidden flex items-center text-orange-600"
+                        onClick={() => setOpen((prev) => !prev)}
+                    >
+                        {open ? <X size={26} /> : <Menu size={26} />}
+                    </button>}
             </div>
 
             {/* Category Menu (Mobile Toggle) */}
@@ -98,15 +104,15 @@ function Header({ }: HeaderProps) {
                         </div>
                     ))}
 
-                    {/* Mobile Buttons */}
-                    <div className="flex flex-col gap-2 mt-3">
-                        <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
-                            Login
-                        </Button>
-                        <Button className="bg-orange-500 text-white hover:bg-orange-600">
-                            Become a Vendor
-                        </Button>
-                    </div>
+                    {!user &&
+                        (<div className="flex flex-col gap-2 mt-3">
+                            <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
+                                Login
+                            </Button>
+                            <Button className="bg-orange-500 text-white hover:bg-orange-600">
+                                Become a Vendor
+                            </Button>
+                        </div>)}
                 </div>
             )}
         </header>

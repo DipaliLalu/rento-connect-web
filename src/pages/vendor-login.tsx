@@ -7,6 +7,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { loginVendor } from '../actions/vendor';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { useState } from 'react';
 
 
 const formSchema = z.object({
@@ -15,7 +17,8 @@ const formSchema = z.object({
 
 });
 function VendorLogin() {
-const navigate=useNavigate();
+    const [message, setMessage] = useState<string | null>(null);
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -38,10 +41,11 @@ const navigate=useNavigate();
                     formData.append(key, data[key as keyof typeof data]);
                 }
             }
-            await loginVendor(formData,navigate);
+            await loginVendor(formData, navigate);
             reset();
-        } catch (err) {
+        } catch (err:any) {
             console.error("Failed to login:", err);
+            setMessage(err?.message);
         }
     };
 
@@ -71,6 +75,12 @@ const navigate=useNavigate();
                 </Link>
                 <h1 className="text-2xl text-blue-950 font-bold">Login</h1>
                 <p className="text-muted-foreground">Enter your details to login to your account</p>
+                {message != null && (
+                    <Alert variant="destructive">
+                        <AlertDescription className='capitalize'>{message}</AlertDescription>
+                    </Alert>
+                )}
+
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}

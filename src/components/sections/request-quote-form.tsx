@@ -22,6 +22,7 @@ const formSchema = z.object({
     contact: z.string().min(1, "Contact number is required"),
     email: z.string().email("Invalid email"),
     subcategory: z.string(),
+    category:z.string().optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
     location: z.string().min(1, "Location is required"),
@@ -37,7 +38,6 @@ export default function RequestQuoteForm({
 }) {
     const user = getVendorInfo();
     const { customer } = useGetCustomer(Number(user?.id));
-console.log(customer)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -45,6 +45,7 @@ console.log(customer)
             contact: "",
             email: "",
             subcategory: subcategory || "",
+            category:"",
             location: "",
             description: "",
             customer_id: "",
@@ -66,6 +67,7 @@ console.log(customer)
                 description: "",
                 customer_id: customer.id || "",
                 gstin: customer.gstin || "",
+                category:customer.category||"",
             });
         }
     }, [customer, reset, subcategory]);

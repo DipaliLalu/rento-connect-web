@@ -12,29 +12,29 @@ const swrOptions = {
 
 // Accept FormData instead of customer
 export async function registerBooking(data: FormData) {
-    const url = endpoints.booking.register;
-    try {
-        const res = await axiosInstance({
-            method: "POST",
-            url,
-            data,
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "X-API-KEY": "rentosupersecretkey102"
-            },
-        });
-        if (res?.data?.response === true) {
-            toast.success(res.data.message);
-            return res.data;
-        } else {
-            throw new Error(res?.data?.message || "Operation failed");
-        }
-    } catch (error: any) {
-        const errorMessage =
-            error?.response?.data?.message || error.message || "Unknown error";
-        toast.error(`Failed to registre customer: ${errorMessage}`);
-        throw error;
+  const url = endpoints.booking.register;
+  try {
+    const res = await axiosInstance({
+      method: "POST",
+      url,
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "X-API-KEY": "rentosupersecretkey102"
+      },
+    });
+    if (res?.data?.response === true) {
+      toast.success(res.data.message);
+      return res.data;
+    } else {
+      throw new Error(res?.data?.message || "Operation failed");
     }
+  } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.message || error.message || "Unknown error";
+    toast.error(`Failed to registre customer: ${errorMessage}`);
+    throw error;
+  }
 }
 
 // list of vendor list
@@ -112,6 +112,28 @@ export function useGetActiveBookingList(searchFor?: string) {
   return memoizedValue;
 }
 
+// list of active vendor list
+export function useGetCustomerBookingList(id: number) {
+  const url = endpoints.booking.customerBooking(id);
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR<{
+    data: Booking[];
+  }>(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(() => {
+    return {
+      bookings: data?.data,
+      isLoading,
+      bookingsError: error,
+      bookingsValidating: isValidating,
+      bookingsEmpty: !isLoading,
+      mutate,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}
+
 export async function activeBooking(id: number) {
   try {
     const res = await axiosInstance({
@@ -142,7 +164,7 @@ export async function deleteBooking(id: number) {
     const res = await axiosInstance({
       method: "DELETE",
       url: endpoints.booking.delete(id),
-       headers: {
+      headers: {
         "Content-Type": "multipart/form-data",
         "X-API-KEY": "rentosupersecretkey102"
       },

@@ -67,11 +67,10 @@ export function useGetVendorList(searchFor?: string) {
 }
 
 // list of active vendor list
-export function useGetActiveVendorList(searchFor?: string) {
-  const url =
-    searchFor === "create"
-      ? `${endpoints.vendor.vendotActiveList}?searchFor=${searchFor}`
-      : endpoints.vendor.vendotActiveList;
+export function useGetActiveVendorList(category?: string) {
+   const url = category
+    ? `${endpoints.vendor.vendotActiveList}?category=${category}`
+    : endpoints.vendor.vendotActiveList;
 
   const { data, isLoading, error, isValidating, mutate } = useSWR<{
     data: Vendor[];
