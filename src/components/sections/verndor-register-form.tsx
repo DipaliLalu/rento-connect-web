@@ -10,27 +10,34 @@ import { useGetCategory } from "../../actions/category";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 import { registerVendor } from "../../actions/vendor";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Alert, AlertDescription } from "../ui/alert";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    contact: z.string().min(1, "Contact number is required"),
-    alternativecontact: z.string().optional(),
-    email: z.string().email("Invalid email"),
+    contact: z.string().min(1, "Contact number is required").regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits"),
+    alternativecontact: z.string().regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits").optional(),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
     password: z.string().min(6, "Min 6 characters"),
     category: z.string(),
-    state: z.string(),
-    pincode: z.string(),
-    city: z.string(),
+    state: z.string().min(1, "State is required"),
+    pincode: z.string().min(1, "Pincode is required"),
+    city: z.string().min(1, "City is required"),
     address: z.string().min(1, "Business address is required"),
-    gstin: z.string().optional(),
-    experience: z.string().optional(),
-    location: z.string().optional(),
+    gstin: z.string().min(1, "GSTIN is required"),
+    experience: z.string().min(1, "Experience is required"),
+    location: z.string().min(1, "Location is required"),
     availability: z.enum(["full-time", "part-time", "on-call"]),
-    id_proof: z.any().optional(),
+    id_proof: z
+        .any()
+        .refine((file) => !file || (file instanceof FileList && file.length > 0), {
+            message: "Id Proof is required",
+        }),
 });
 
 export default function VendorRegistrationForm() {
     const { category } = useGetCategory();
+    const [message, setMessage] = useState<object | null>(null);
     // const [slug,] = useState<string | null>(category?.[0]?.slug || null);
     // const { subcategory } = useGetSubCategoryWithSlug(slug);
 
@@ -71,14 +78,26 @@ export default function VendorRegistrationForm() {
             }
             await registerVendor(formData);
             reset();
-        } catch (err) {
+            setMessage(null);
+        } catch (err: any) {
             console.error("Failed to submit vendor:", err);
+            setMessage(err?.message);
         }
     };
 
 
     return (
         <Form {...form}>
+            {message && (
+                <Alert variant="destructive">
+                    {Object.entries(message).map(([key, value]) => (
+                        <AlertDescription key={key} className="capitalize">
+                            {value}
+                        </AlertDescription>
+                    ))}
+                </Alert>
+            )}
+
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6 px-1 sm:px-6 md:px-8"

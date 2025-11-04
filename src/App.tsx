@@ -14,6 +14,7 @@ const CategoryPage = lazy(() => import('./pages/category'));
 const VendorRegister = lazy(() => import("./pages/vendor-register"))
 const Login = lazy(() => import("./admin/login"));
 const SidebarLayout = lazy(() => import("./admin/sidebar/layout"));
+const WelcomePage=lazy(()=>import("./admin/welcome-page"));
 const Profile = lazy(() => import("./admin/profile"));
 const UserCreate = lazy(() => import("./admin/sidebar/user/user"));
 const UserList = lazy(() => import('./admin/sidebar/user/user-list'));
@@ -34,6 +35,12 @@ const RequestQuoteForm=lazy(()=>import("./pages/request-quote"));
 const ActiveBookingList = lazy(() => import("./admin/sidebar/booking/approval-bookinglist"));
 const PendingBookingList = lazy(() => import("./admin/sidebar/booking/bookinglist"));
 const Booking=lazy(()=>import("./customer-panel/bookings-list"));
+const AboutPage=lazy(()=>import("./pages/about"));
+const PrivacyPage=lazy(()=>import("./pages/privacy-police"));
+const TermsPage=lazy(()=>import("./pages/terms"));
+const CareerPage=lazy(()=>import("./pages/career-page"));
+const FAQPage=lazy(()=>import("./pages/faq-page"));
+const ContactPage=lazy(()=>import("./pages/contact-page"));
 
 function App() {
 
@@ -52,11 +59,17 @@ function App() {
             <Route path="/customer-register" element={<CustomerRegister />} />
             <Route path="/login" element={<VendorLogin />} />
             <Route path="/request-quote" element={<RequestQuoteForm />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/careers" element={<CareerPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Route>
 
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<SidebarLayout />}>
-              <Route index element={<UserList />} />
+              <Route index element={<WelcomePage />} />
               <Route path="user" element={<UserCreate />} />
               <Route path="user-list" element={<UserList />} />
               <Route path="category" element={<Category />} />

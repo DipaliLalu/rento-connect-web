@@ -13,17 +13,24 @@ import { registerCustomer } from "../../actions/customer";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    contact: z.string().min(1, "Contact number is required"),
-    alternativecontact: z.string().optional(),
-    email: z.string().email("Invalid email"),
-    password: z.string().min(6, "Min 6 characters"),
+    contact: z
+        .string()
+        .min(1, "Contact number is required")
+        .regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits"),
+    alternativecontact: z.string().regex(/^[0-9]{10}$/, "Alternavtive Contact number must be exactly 10 digits").optional(),
+    email: z.string().email("Invalid email").regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits"),
+    password: z
+        .string()
+        .min(6, "Password must be at least 6 characters")
+        .max(10, "Password must not exceed 10 characters")
+        .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,10}$/, "Password must include letters and numbers"),
     category: z.string(),
-    state: z.string(),
-    pincode: z.string(),
-    city: z.string(),
+    state: z.string().min(1, "State is required"),
+    pincode: z.string().min(1, "Pincode is required"),
+    city: z.string().min(1, "City is required"),
     address: z.string().min(1, "Business address is required"),
-    gstin: z.string().optional(),
-    location: z.string().optional(),
+    gstin: z.string().min(1, "GSTIN is required"),
+    location: z.string().min(1, "Location is required"),
     service_frequency: z.enum(["one-time", "recurring", "project-based"]),
 });
 

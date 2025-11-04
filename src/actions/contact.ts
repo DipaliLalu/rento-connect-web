@@ -13,6 +13,7 @@ export async function sendMail(data: FormData) {
       data,
       headers: {
         "Content-Type": "multipart/form-data",
+         "X-API-KEY": "rentosupersecretkey102"
       },
     });
     if (res?.data?.result === "success") {
@@ -24,7 +25,7 @@ export async function sendMail(data: FormData) {
   } catch (error: any) {
     const errorMessage =
       error?.response?.data?.message || error.message || "Unknown error";
-    toast.error(`Failed to add category: ${errorMessage}`);
+    toast.error(`Failed to submit: ${errorMessage}`);
     throw error; // Re-throw to allow caller to handle
   }
 }

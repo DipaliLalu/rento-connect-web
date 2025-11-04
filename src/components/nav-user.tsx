@@ -10,18 +10,31 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { getVendorInfo } from "../utils/vendor-utils";
 import { logoutVendor } from "../actions/vendor";
+import { useState } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const user = getUserInfo();
   const vendoruser = getVendorInfo();
   const navigate = useNavigate();
   const handleLogout = () => {
+    setIsLoggingOut(true);
     if (user?.data?.user_id != null) {
-      logoutAdmin(user?.data?.user_id, navigate);
+      try {
+        logoutAdmin(user?.data?.user_id, navigate);
+      } catch (error) {
+        console.error("Logout failed:", error);
+        setIsLoggingOut(false); // re-enable if failed
+      }
     }
     if (vendoruser?.id) {
-      logoutVendor(Number(vendoruser.id), navigate);
+      try {
+        logoutVendor(Number(vendoruser.id), navigate);
+      } catch (error) {
+        console.error("Logout failed:", error);
+        setIsLoggingOut(false); // re-enable if failed
+      }
     }
   };
 
@@ -71,9 +84,9 @@ export function NavUser() {
               </Link>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+            <DropdownMenuItem onClick={handleLogout} className={`cursor-pointer ${isLoggingOut ? "opacity-50 cursor-not-allowed" : ""}`} disabled={isLoggingOut}>
               <LogOut className="mr-2 h-4 w-4" />
-              Log out
+              {isLoggingOut ? "Logging out..." : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

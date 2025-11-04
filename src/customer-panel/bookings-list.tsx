@@ -20,7 +20,7 @@ import {
     FaAnglesLeft,
     FaAnglesRight,
 } from "react-icons/fa6";
-import { deleteBooking, useGetBookings } from "../actions/booking";
+import { deleteBooking, useGetCustomerBookingList } from "../actions/booking";
 import type { Booking } from "../types/booking";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -28,8 +28,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-
-
+import {  getVendorInfo } from "../utils/vendor-utils";
 
 export default function CustomerBookingList() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -40,8 +39,8 @@ export default function CustomerBookingList() {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const { bookings, isLoading, mutate } = useGetBookings();
-    // const navigate = useNavigate();
+    const user=getVendorInfo();
+    const { bookings, isLoading, mutate } = useGetCustomerBookingList(Number(user?.id));
 
     // 🧹 Deletion logic (with revalidation)
     async function handleDelete(id: number) {

@@ -28,6 +28,7 @@ import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { useGetActiveVendorList } from "../../../actions/vendor";
 import type { Vendor } from "../../../types/vendor";
+import { getUserInfo } from "../../../utils/utils";
 
 
 export default function ActiveVendorlist() {
@@ -38,7 +39,11 @@ export default function ActiveVendorlist() {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const { vendor, isLoading } = useGetActiveVendorList();
+    const user = getUserInfo();
+    const categoryParam = Array.isArray(user?.data.roles)
+        ? user?.data.roles.join(',').toLowerCase() // e.g. ["HR", "Admin"] → "HR,Admin"
+        : user?.data.roles;
+    const { vendor, isLoading } = useGetActiveVendorList(categoryParam);
     // const navigate = useNavigate();
 
     // 🧹 Deletion logic (with revalidation)
