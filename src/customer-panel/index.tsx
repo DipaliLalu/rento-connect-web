@@ -10,6 +10,9 @@ function Index() {
     const handleBookings=()=>{
         navigate('/customer-dashboard/booking')
     }
+    const handleBookinghistory=()=>{
+        navigate('/customer-dashboard/booking-history')
+    }
     return (
         <section className="">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 bg-slate-200/30 py-5 lg:py-14 px-5 md:px-10">
@@ -35,7 +38,7 @@ function Index() {
                         <h2 className="text-2xl font-bold text-blue-950">Booking History</h2>
                     </div>
                     <p className="text-muted-foreground">Review your past bookings and payment history.</p>
-                      <Button className="w-fit bg-slate-100 text-black hover:text-white">View History</Button>
+                      <Button className="w-fit bg-slate-100 text-black hover:text-white" onClick={handleBookinghistory}>View History</Button>
                 </div>
             </div>
             <Outlet/>

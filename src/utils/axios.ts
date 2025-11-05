@@ -96,7 +96,8 @@ export const endpoints = {
     bookingActiveList: "booking/activelist",
     bookinglist: "booking/list",
     activeBooking: (id: number | null) => `booking/activate/${id}`,
-    customerBooking: (id: number | null) => `bookinglist//${id}`,
+    customerBooking: (id: number | null) => `bookinglist/${id}`,
+    customerBookingHistory: (id: number | null) => `bookinghistory/${id}`,
     delete: (id: number | null) => `booking/${id}`,
   },
   product: {
@@ -104,6 +105,12 @@ export const endpoints = {
     list: "/products",
     update: (id: number | null) => `/products/${id}`,
     delete: (id: number | null) => `/products/${id}`,
+  },
+  blog: {
+    add: "/blog",
+    list: "/blog",
+    update: (id: number | null) => `/blog/${id}`,
+    delete: (id: number | null) => `/blog/${id}`,
   },
   contact: {
     sendmail: "/contact/send",
