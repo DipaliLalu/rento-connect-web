@@ -13,14 +13,14 @@ import {
     useReactTable,
     type VisibilityState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import {
     FaAngleLeft,
     FaAngleRight,
     FaAnglesLeft,
     FaAnglesRight,
 } from "react-icons/fa6";
-import { deleteBooking, useGetCustomerBookinghistory, useGetCustomerBookingList } from "../actions/booking";
+import {  useGetCustomerBookinghistory } from "../actions/booking";
 import type { Booking } from "../types/booking";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";

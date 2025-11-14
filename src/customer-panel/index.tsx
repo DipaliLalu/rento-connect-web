@@ -3,7 +3,7 @@ import { TfiMenuAlt } from "react-icons/tfi";
 import { HiOutlinePlusCircle } from "react-icons/hi";
 import { Button } from "../components/ui/button";
 import { LuHistory } from "react-icons/lu";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 function Index() {
     const navigate=useNavigate();
@@ -30,7 +30,7 @@ function Index() {
                         <h2 className="text-2xl font-bold text-blue-950">New Requirement</h2>
                     </div>
                     <p className="text-muted-foreground">Need to rent equipment, hire an expert or book a vehicle? Post a new requirement.</p>
-                    <Button className="w-fit bg-blue-900 hover:bg-blue-800">Post Requirement</Button>
+                    <Button className="w-fit bg-blue-900 hover:bg-blue-800"><Link to={'/services'}>Post Requirement</Link></Button>
                 </div>
                 <div className="flex flex-col p-5 bg-white rounded-lg gap-4">
                     <div className="flex gap-2 items-center">

@@ -69,7 +69,7 @@ export default function BlogDetailPage() {
         <div>
           <Link
             to="/blog"
-            className="inline-flex gap-3 text-blue-900 items-center items-center hover:underline font-medium"
+            className="inline-flex gap-3 text-blue-900 items-center hover:underline font-medium"
           >
             <GoArrowLeft />
             Back to all posts

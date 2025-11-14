@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import useSWR from "swr";
 import { useMemo } from "react";
 import axiosInstance, { endpoints, fetcher } from "../utils/axios";
-import type { SubCategory } from "../types/subcategory";
+import type { MobilitySubCategory, SubCategory } from "../types/subcategory";
 
 
 // SWR Options for data fetching
@@ -86,6 +86,30 @@ export function useGetSubCategory(searchFor?: string) {
       subcategoryError: error,
       subcategoryValidating: isValidating,
       subcategoryEmpty: !isLoading,
+      mutate,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}
+// list of Category
+export function useGetMobilitySubCategory(searchFor?: string) {
+  const url =
+    searchFor === "create"
+      ? `${endpoints.mobilitysubservices.list}?searchFor=${searchFor}`
+      : endpoints.mobilitysubservices.list;
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR<{
+    data: MobilitySubCategory[];
+  }>(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(() => {
+    return {
+      mobilitysubcategory: data?.data,
+      isLoading,
+      mobilitysubcategoryError: error,
+      mobilitysubcategoryValidating: isValidating,
+      mobilitysubcategoryEmpty: !isLoading,
       mutate,
     };
   }, [data?.data, error, isLoading, isValidating]);

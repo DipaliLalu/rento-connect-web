@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -20,6 +20,7 @@ import { useGetLoginUser } from "../../../actions/auth";
 import {
   addSubCategory,
   updateSubCategory,
+  useGetMobilitySubCategory,
   useGetSubCategory,
 } from "../../../actions/subcategory";
 import type { SubCategory } from "../../../types/subcategory";
@@ -55,6 +56,7 @@ const schema = z.object({
     .optional(),
   metadata: z.string().min(2, "Enter metadata"),
   metatag: z.string().min(2, "Enter metatag"),
+  type: z.string().optional(),
   active: z.string().default("1"),
 });
 
@@ -67,6 +69,7 @@ function SubCategoryForm() {
   const { mutate } = useGetSubCategory();
   const { user } = useGetLoginUser();
   const { category } = useGetCategory();
+  const { mobilitysubcategory } = useGetMobilitySubCategory();
 
   const subcategory: SubCategory | undefined = location.state?.subcategory;
 
@@ -80,6 +83,7 @@ function SubCategoryForm() {
     metatag: subcategory?.metatag || "",
     subcategory_image: undefined,
     active: subcategory?.active?.toString() ?? "1",
+    type: subcategory?.type ?? "",
   };
 
   const form = useForm({
@@ -95,6 +99,12 @@ function SubCategoryForm() {
     formState: { isSubmitting },
   } = form;
 
+  useEffect(() => {
+    if (form.watch("category_slug") !== "mobility") {
+      form.setValue("type", "");
+    }
+  }, [form.watch("category_slug")]);
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const formData = new FormData();
 
@@ -108,6 +118,7 @@ function SubCategoryForm() {
     formData.append("metadata", data.metadata);
     formData.append("metatag", data.metatag);
     formData.append("active", data.active);
+    formData.append("type", data?.type ?? "");
     formData.append("created_by", user?.data.username || "");
 
     if (data.subcategory_image && data.subcategory_image.length > 0) {
@@ -140,13 +151,14 @@ function SubCategoryForm() {
             {subcategory ? "Edit Subcategory" : "Create Subcategory"}
           </h2>
 
+
           {/* Category Select */}
           <FormField
             control={control}
             name="category_slug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Select Category</FormLabel>
+                <FormLabel>Select Service</FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange(value)}
                   value={field.value}
@@ -172,6 +184,37 @@ function SubCategoryForm() {
               </FormItem>
             )}
           />
+
+          {form.watch("category_slug") === "mobility" && (
+            <FormField
+              control={control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Select Sub Services</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a sub service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Services</SelectLabel>
+                        {mobilitysubcategory?.map((data) => (
+                          <SelectItem key={data.slug} value={data.slug || ""}>
+                            {data.display_name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Subcategory Name */}
           <FormField

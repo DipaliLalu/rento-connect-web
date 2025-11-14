@@ -43,9 +43,13 @@ const PrivacyPage = lazy(() => import("./pages/privacy-police"));
 const TermsPage = lazy(() => import("./pages/terms"));
 const CareerPage = lazy(() => import("./pages/career-page"));
 const FAQPage = lazy(() => import("./pages/faq-page"));
+const ServicesPage = lazy(() => import("./pages/services-page"));
 const ContactPage = lazy(() => import("./pages/contact-page"));
 const BlogListPage = lazy(() => import("./pages/bloglist-page"));
 const BlogDetailPage = lazy(() => import("./pages/blog-detail-page"));
+const EquipmentPage = lazy(() => import("./pages/equipment-page"));
+const ExpertsPage = lazy(() => import("./pages/experts-page"));
+const MobilityPage = lazy(() => import("./pages/mobility-page"));
 
 function App() {
 
@@ -60,6 +64,9 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/category" element={<CategoryPage />} />
+            <Route path="/equipment" element={<EquipmentPage />} />
+            <Route path="/experts" element={<ExpertsPage />} />
+            <Route path="/mobility" element={<MobilityPage />} />
             <Route path="/vendor-register" element={<VendorRegister />} />
             <Route path="/customer-register" element={<CustomerRegister />} />
             <Route path="/login" element={<VendorLogin />} />
@@ -72,6 +79,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/blog" element={<BlogListPage />} />
             <Route path="/blogdetail" element={<BlogDetailPage />} />
+            <Route path="/services" element={<ServicesPage />} />
           </Route>
 
           <Route element={<PrivateRoute />}>

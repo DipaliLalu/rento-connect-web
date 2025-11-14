@@ -82,7 +82,7 @@ export const endpoints = {
   vendor: {
     register: "/vendor/register",
     login: "/vendor/login",
-    vendotActiveList:`vendor/activelist`,
+    vendotActiveList: `vendor/activelist`,
     vendorlist: "vendor/list",
     activeVendor: (id: number | null) => `/vendor/activate/${id}`,
   },
@@ -92,7 +92,7 @@ export const endpoints = {
   },
   booking: {
     register: "/booking",
-    list:`booking-list`,
+    list: `booking-list`,
     bookingActiveList: "booking/activelist",
     bookinglist: "booking/list",
     activeBooking: (id: number | null) => `booking/activate/${id}`,
@@ -105,6 +105,7 @@ export const endpoints = {
     list: "/products",
     update: (id: number | null) => `/products/${id}`,
     delete: (id: number | null) => `/products/${id}`,
+    listwithslug: (slug: any | null) => `/products/productBySlug/${slug}`,
   },
   blog: {
     add: "/blog",
@@ -114,5 +115,8 @@ export const endpoints = {
   },
   contact: {
     sendmail: "/contact/send",
-  }
+  },
+  mobilitysubservices: {
+    list: "/mobilitysubservices",
+  },
 };

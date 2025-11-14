@@ -84,12 +84,12 @@ export default function CategoryList() {
         <div style={{ width: "200px" }}>Description</div>
       ),
       cell: ({ row }) => (
-        <div  style={{ width: "300px", whiteSpace: "pre-wrap", }}>
+        <div style={{ width: "300px", whiteSpace: "pre-wrap", }}>
           {row.original.description}
         </div>
       ),
     }
-,
+    ,
     {
       accessorKey: "subcategory_image",
       header: () => <div>Image</div>,
@@ -191,13 +191,14 @@ export default function CategoryList() {
         <Input
           placeholder="Filter name..."
           value={
-            (table.getColumn("category_name")?.getFilterValue() as string) ?? ""
+            (table.getColumn("subcategory_name")?.getFilterValue() as string) ?? ""
           }
           onChange={(e) =>
-            table.getColumn("category_name")?.setFilterValue(e.target.value)
+            table.getColumn("subcategory_name")?.setFilterValue(e.target.value)
           }
           className="max-w-sm"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

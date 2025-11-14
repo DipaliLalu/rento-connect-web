@@ -10,5 +10,12 @@ export type SubCategory = {
     deleted?: number;
     created_by?: string;
     metadata?: string;
+    type?: string | null;
     metatag?: string;
 };
+
+export type MobilitySubCategory = {
+    id?: string | null;
+    slug?: string;
+    display_name?: string;
+}

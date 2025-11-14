@@ -118,3 +118,27 @@ export async function deleteProduct(id: number) {
     throw error;
   }
 }
+
+//get category with slug
+export function useGetProductWithSlug(slug: string | null) {
+  const url = slug
+    ? endpoints.product.listwithslug(slug)
+    : endpoints.product.list;
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR<{
+    data: Product[];
+  }>(url, fetcher);
+
+  const memoizedValue = useMemo(() => {
+    return {
+      products: data?.data,
+      isLoading,
+      productsError: error,
+      productsValidating: isValidating,
+      productsEmpty: !isLoading && !data?.data?.length,
+      mutate,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}

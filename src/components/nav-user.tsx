@@ -2,7 +2,7 @@
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "./ui/sidebar";
 import { getUserInfo } from "../utils/utils";
 import { logoutAdmin } from "../actions/auth";
@@ -66,8 +66,7 @@ export function NavUser() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <Link
-                to={"/profile"}
+              <div
                 className="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
@@ -81,7 +80,7 @@ export function NavUser() {
                   </span>
                   <span className="truncate">{user ? user?.data?.email : vendoruser?.email}</span>
                 </div>
-              </Link>
+              </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className={`cursor-pointer ${isLoggingOut ? "opacity-50 cursor-not-allowed" : ""}`} disabled={isLoggingOut}>

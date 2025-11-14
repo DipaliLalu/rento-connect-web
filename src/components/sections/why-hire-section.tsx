@@ -8,6 +8,7 @@ interface CategoryData {
   title: string;
   points: { title: string; desc: string }[];
   buttonText: string;
+  url:string;
 }
 
 const categoryData: Record<CategoryKey, CategoryData> = {
@@ -20,6 +21,7 @@ const categoryData: Record<CategoryKey, CategoryData> = {
       { title: "Pan-India Delivery", desc: "We facilitate equipment mobilization to your project site, wherever it is in India." },
     ],
     buttonText: "Post Your Requirement",
+    url:'services',
   },
   experts: {
     title: "Why Hire Experts from Rento Connect?",
@@ -28,7 +30,8 @@ const categoryData: Record<CategoryKey, CategoryData> = {
       { title: "Flexible Engagement", desc: "Hire experts for short-term projects, long-term contracts, or on-demand consultations." },
       { title: "Nationwide Coverage", desc: "Access a vast network of specialists across India, ready to be deployed to your site." },
     ],
-    buttonText: "Get a Custom Quote",
+    buttonText: "Post Your Requirement",
+    url:'services',
   },
   mobility: {
     title: "Your Partner in Workforce Mobility",
@@ -39,6 +42,7 @@ const categoryData: Record<CategoryKey, CategoryData> = {
       { title: "Scalable Fleet", desc: "From a single sedan to a fleet of buses, we scale our services to meet your operational demands." },
     ],
     buttonText: "Book Now",
+    url:'contact',
   },
 };
 

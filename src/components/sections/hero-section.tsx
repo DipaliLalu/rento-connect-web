@@ -25,7 +25,7 @@ const HeroSection = () => {
 
           <div className="flex items-center gap-3 justify-center">
             <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
-              <Link to={'/customer-register'}>
+              <Link to={'/services'}>
               Find a Service
               </Link>
             </Button>
