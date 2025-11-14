@@ -48,7 +48,7 @@ function Header({ }: HeaderProps) {
                         {category && category.map((data) => (
                             <Link
                                 key={data.category_id}
-                                to={`category?type=${data?.slug}` || ''}
+                                to={`${data?.slug}` || ''}
                                 className="text-blue-950 font-medium whitespace-nowrap hover:text-blue-900 cursor-pointer transition"
                             >
                                 {data.category_name}
@@ -61,15 +61,16 @@ function Header({ }: HeaderProps) {
                 <div className="flex gap-4">
                     {user?.role == "customer" || user?.role == "vendor" ? <UserDropdown /> :
                         <div className="hidden md:flex items-center gap-3">
-                            <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
-                                <Link to={'login'}>
-                                    Login</Link>
-                            </Button>
-                            <Button className="bg-orange-500 text-white hover:bg-orange-600">
-                                <Link to={'vendor-register'}>
+                            <Link to={'login'}>
+                                <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
+                                    Login
+                                </Button>
+                            </Link>
+                            <Link to={'vendor-register'}>
+                                <Button className="bg-orange-500 text-white hover:bg-orange-600">
                                     Become a Vendor
-                                </Link>
-                            </Button>
+                                </Button>
+                            </Link>
                         </div>
                     }
                     <button
@@ -79,14 +80,7 @@ function Header({ }: HeaderProps) {
                         {open ? <X size={26} /> : <Menu size={26} />}
                     </button>
                 </div>
-                {/* Mobile Toggle */}
-                {!user &&
-                    <button
-                        className="md:hidden flex items-center text-orange-600"
-                        onClick={() => setOpen((prev) => !prev)}
-                    >
-                        {open ? <X size={26} /> : <Menu size={26} />}
-                    </button>}
+
             </div>
 
             {/* Category Menu (Mobile Toggle) */}
@@ -95,23 +89,29 @@ function Header({ }: HeaderProps) {
                     ref={wrapperRef}
                     className="flex flex-col md:hidden gap-3 px-5 py-4 border-t bg-orange-50 animate-slideDown"
                 >
-                    {category.map((data) => (
-                        <div
+                    {category && category.map((data) => (
+                        <Link
                             key={data.category_id}
-                            className="text-orange-600 font-medium hover:text-orange-800 cursor-pointer transition"
+                            to={`${data?.slug}` || ''}
+                            onClick={() => setOpen(false)}
+                            className="text-blue-950 font-medium whitespace-nowrap hover:text-blue-900 cursor-pointer transition"
                         >
                             {data.category_name}
-                        </div>
+                        </Link>
                     ))}
 
                     {!user &&
                         (<div className="flex flex-col gap-2 mt-3">
-                            <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white">
-                                Login
-                            </Button>
-                            <Button className="bg-orange-500 text-white hover:bg-orange-600">
-                                Become a Vendor
-                            </Button>
+                            <Link to={'/login'} onClick={() => setOpen(false)}>
+                                <Button className="bg-white text-orange-600 border border-orange-500 hover:bg-orange-500 hover:text-white" >
+                                    Login
+                                </Button>
+                            </Link>
+                            <Link to={'/vendor-register'} onClick={() => setOpen(false)}>
+                                <Button className="bg-orange-500 text-white hover:bg-orange-600">
+                                    Become a Vendor
+                                </Button>
+                            </Link>
                         </div>)}
                 </div>
             )}

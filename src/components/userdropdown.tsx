@@ -14,6 +14,7 @@ import {
 import { getVendorInfo } from "../utils/vendor-utils";
 import { logoutVendor } from "../actions/vendor";
 import { useState } from "react";
+import { MdOutlineDashboard } from "react-icons/md";
 
 export default function UserDropdown() {
   const vendoruser = getVendorInfo();
@@ -57,8 +58,7 @@ export default function UserDropdown() {
         className="min-w-56 rounded-lg"
       >
         <DropdownMenuLabel className="p-0 font-normal">
-          <Link
-            to={"/profile"}
+          <div
             className="flex items-center gap-2 px-3 py-2 text-left text-sm"
           >
             <Avatar className="h-8 w-8 rounded-lg">
@@ -72,9 +72,16 @@ export default function UserDropdown() {
                 {vendoruser?.email}
               </span>
             </div>
-          </Link>
+          </div>
         </DropdownMenuLabel>
 
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className={`cursor-pointer`}
+        >
+          <MdOutlineDashboard/>
+          <Link to={'customer-dashboard'}>Customer Dashboard</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem

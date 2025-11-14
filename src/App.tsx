@@ -14,7 +14,7 @@ const CategoryPage = lazy(() => import('./pages/category'));
 const VendorRegister = lazy(() => import("./pages/vendor-register"))
 const Login = lazy(() => import("./admin/login"));
 const SidebarLayout = lazy(() => import("./admin/sidebar/layout"));
-const WelcomePage=lazy(()=>import("./admin/welcome-page"));
+const WelcomePage = lazy(() => import("./admin/welcome-page"));
 const Profile = lazy(() => import("./admin/profile"));
 const UserCreate = lazy(() => import("./admin/sidebar/user/user"));
 const UserList = lazy(() => import('./admin/sidebar/user/user-list'));
@@ -29,18 +29,27 @@ const VendorSidebarLayout = lazy(() => import('./vendor-panel/layout'));
 const Product = lazy(() => import("./vendor-panel/product/product"));
 const ProductList = lazy(() => import("./vendor-panel/product/product-list"));
 const CustomerRegister = lazy(() => import("./pages/customer-register"));
-const CustomerLayout=lazy(()=>import("./customer-panel/layout"));
+const CustomerLayout = lazy(() => import("./customer-panel/layout"));
 const CustomerHomePage = lazy(() => import("./customer-panel/index"));
-const RequestQuoteForm=lazy(()=>import("./pages/request-quote"));
+const RequestQuoteForm = lazy(() => import("./pages/request-quote"));
 const ActiveBookingList = lazy(() => import("./admin/sidebar/booking/approval-bookinglist"));
 const PendingBookingList = lazy(() => import("./admin/sidebar/booking/bookinglist"));
-const Booking=lazy(()=>import("./customer-panel/bookings-list"));
-const AboutPage=lazy(()=>import("./pages/about"));
-const PrivacyPage=lazy(()=>import("./pages/privacy-police"));
-const TermsPage=lazy(()=>import("./pages/terms"));
-const CareerPage=lazy(()=>import("./pages/career-page"));
-const FAQPage=lazy(()=>import("./pages/faq-page"));
-const ContactPage=lazy(()=>import("./pages/contact-page"));
+const Blog = lazy(() => import("./admin/sidebar/blog/blog"));
+const BlogList = lazy(() => import("./admin/sidebar/blog/blog-list"));
+const Booking = lazy(() => import("./customer-panel/bookings-list"));
+const CustomerHistory = lazy(() => import("./customer-panel/booking-history"));
+const AboutPage = lazy(() => import("./pages/about"));
+const PrivacyPage = lazy(() => import("./pages/privacy-police"));
+const TermsPage = lazy(() => import("./pages/terms"));
+const CareerPage = lazy(() => import("./pages/career-page"));
+const FAQPage = lazy(() => import("./pages/faq-page"));
+const ServicesPage = lazy(() => import("./pages/services-page"));
+const ContactPage = lazy(() => import("./pages/contact-page"));
+const BlogListPage = lazy(() => import("./pages/bloglist-page"));
+const BlogDetailPage = lazy(() => import("./pages/blog-detail-page"));
+const EquipmentPage = lazy(() => import("./pages/equipment-page"));
+const ExpertsPage = lazy(() => import("./pages/experts-page"));
+const MobilityPage = lazy(() => import("./pages/mobility-page"));
 
 function App() {
 
@@ -55,6 +64,9 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/category" element={<CategoryPage />} />
+            <Route path="/equipment" element={<EquipmentPage />} />
+            <Route path="/experts" element={<ExpertsPage />} />
+            <Route path="/mobility" element={<MobilityPage />} />
             <Route path="/vendor-register" element={<VendorRegister />} />
             <Route path="/customer-register" element={<CustomerRegister />} />
             <Route path="/login" element={<VendorLogin />} />
@@ -65,6 +77,9 @@ function App() {
             <Route path="/careers" element={<CareerPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/blog" element={<BlogListPage />} />
+            <Route path="/blogdetail" element={<BlogDetailPage />} />
+            <Route path="/services" element={<ServicesPage />} />
           </Route>
 
           <Route element={<PrivateRoute />}>
@@ -80,6 +95,8 @@ function App() {
               <Route path="vendor-list" element={<VendorList />} />
               <Route path="active-booking" element={<ActiveBookingList />} />
               <Route path="pending-booking-list" element={<PendingBookingList />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog-list" element={<BlogList />} />
             </Route>
             <Route path="/profile" element={<Profile />} />
           </Route>
@@ -93,7 +110,8 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/customer-dashboard" element={<CustomerLayout />}>
                 <Route index element={<CustomerHomePage />} />
-                 <Route path="booking" element={<Booking />} />
+                <Route path="booking" element={<Booking />} />
+                <Route path="booking-history" element={<CustomerHistory />} />
               </Route>
             </Route>
           </Route>

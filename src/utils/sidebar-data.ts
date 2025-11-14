@@ -11,7 +11,7 @@ const data = {
       items: [
         {
           title: "List",
-          url: "/dashboard",
+          url: "/dashboard/user-list",
           permission: 'user.view'
         },
         {
@@ -90,6 +90,24 @@ const data = {
           title: "Pending Booking List",
           url: "/dashboard/pending-booking-list",
           permission: 'booking.approval'
+        },
+      ],
+    },
+    {
+      title: "Blog",
+      url: "/dashboard",
+      icon: MdCategory,
+      isActive: true,
+      items: [
+        {
+          title: "List",
+          url: "/dashboard/blog-list",
+          permission: 'blog.view'
+        },
+        {
+          title: "Add",
+          url: "/dashboard/blog",
+          permission: 'blog.create'
         },
       ],
     },

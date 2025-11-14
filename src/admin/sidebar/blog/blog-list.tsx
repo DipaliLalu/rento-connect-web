@@ -21,15 +21,15 @@ import {
   FaAnglesLeft,
   FaAnglesRight,
 } from "react-icons/fa6";
-
+import DOMPurify from "dompurify";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "../../../components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
-import { deleteSubCategory, useGetSubCategory } from "../../../actions/subcategory";
-import type { SubCategory } from "../../../types/subcategory";
+import { deleteBlog, useGetBlogs } from "../../../actions/blog";
+import type { Blogs } from "../../../types/blogs";
 
 
 export default function CategoryList() {
@@ -40,67 +40,65 @@ export default function CategoryList() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const { subcategory, isLoading, mutate } = useGetSubCategory();
+  const { blogs, isLoading, mutate } = useGetBlogs();
+  console.log(blogs)
   const navigate = useNavigate();
 
   // 🧹 Deletion logic (with revalidation)
   async function handleDelete(id: number) {
-    await deleteSubCategory(id);
+    await deleteBlog(id);
     await mutate(); // refetch SWR
   }
 
-  const columns: ColumnDef<SubCategory>[] = [
+  const columns: ColumnDef<Blogs>[] = [
     {
-      accessorKey: "subcategory_id",
+      accessorKey: "id",
       header: "Index",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "subcategory_name",
+      accessorKey: "title",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("subcategory_name")}</div>,
-    },
-    {
-      accessorKey: "category_slug",
-      header: () => (
-        <div>Category Name</div>
-      ),
-    },
-    {
-      accessorKey: "heading",
-      header: () => <div>Heading</div>,
+      cell: ({ row }) => <div>{row.getValue("title")}</div>,
     },
     {
       accessorKey: "description",
-      header: () => (
-        <div style={{ width: "200px" }}>Description</div>
-      ),
-      cell: ({ row }) => (
-        <div style={{ width: "300px", whiteSpace: "pre-wrap", }}>
-          {row.original.description}
-        </div>
-      ),
-    }
-    ,
+      header: "Description",
+      cell: ({ row }) => {
+        const rawHTML = row.getValue("description") as string
+        const cleanHTML = DOMPurify.sanitize(rawHTML)
+
+        const truncatedText =
+          cleanHTML.length > 100 ? cleanHTML.slice(0, 300) + "..." : cleanHTML
+
+        return (
+          <div
+            className=""
+            style={{ width: "300px", whiteSpace: "pre-wrap", }}
+            dangerouslySetInnerHTML={{ __html: truncatedText }}
+          />
+        )
+      },
+    },
     {
-      accessorKey: "subcategory_image",
+      accessorKey: "image",
       header: () => <div>Image</div>,
       cell: ({ row }) => {
-        const image = row.getValue("subcategory_image");
+        const image = row.getValue("image");
         if (!image) return <div className="text-gray-400 italic">No image</div>;
         const imageURL = `${import.meta.env.VITE_URL}/${image}`;
         return (
           <img
             src={imageURL}
-            alt="Category"
+            alt="blog-image"
             className="w-14 h-14 object-cover border rounded"
           />
         );
@@ -135,19 +133,19 @@ export default function CategoryList() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const subcategory = row.original;
+        const blog = row.original;
         return (
           <div className="flex gap-2">
             <Button
               onClick={() =>
-                navigate("/dashboard/subcategory", { state: { subcategory } })
+                navigate("/dashboard/blog", { state: { blog } })
               }
               variant="secondary"
             >
               Edit
             </Button>
             <Button
-              onClick={() => handleDelete(Number(subcategory.subcategory_id))}
+              onClick={() => handleDelete(Number(blog.id))}
               variant="destructive"
             >
               Delete
@@ -159,7 +157,7 @@ export default function CategoryList() {
   ];
 
   const table = useReactTable({
-    data: subcategory || [],
+    data: blogs || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -191,14 +189,13 @@ export default function CategoryList() {
         <Input
           placeholder="Filter name..."
           value={
-            (table.getColumn("subcategory_name")?.getFilterValue() as string) ?? ""
+            (table.getColumn("title")?.getFilterValue() as string) ?? ""
           }
           onChange={(e) =>
-            table.getColumn("subcategory_name")?.setFilterValue(e.target.value)
+            table.getColumn("title")?.setFilterValue(e.target.value)
           }
           className="max-w-sm"
         />
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

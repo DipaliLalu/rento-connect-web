@@ -133,6 +133,27 @@ export function useGetCustomerBookingList(id: number) {
 
   return memoizedValue;
 }
+// list of active vendor list
+export function useGetCustomerBookinghistory(id: number) {
+  const url = endpoints.booking.customerBookingHistory(id);
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR<{
+    data: Booking[];
+  }>(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(() => {
+    return {
+      bookings: data?.data,
+      isLoading,
+      bookingsError: error,
+      bookingsValidating: isValidating,
+      bookingsEmpty: !isLoading,
+      mutate,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}
 
 export async function activeBooking(id: number) {
   try {

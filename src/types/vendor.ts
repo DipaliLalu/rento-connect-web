@@ -18,4 +18,5 @@ export type Vendor = {
     deleted?: string;
     id_proof?: any | string;
     role?: string;
+    data?:{category:string};
 };

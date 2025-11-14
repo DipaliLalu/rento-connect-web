@@ -11,11 +11,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Button } from "../../components/ui/button";
+import { getVendorInfo } from "../../utils/vendor-utils";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { useGetSubCategoryWithSlug } from "../../actions/subcategory";
 
 
 // Schema
 const schema = z.object({
   product_id: z.string().optional(),
+  category: z.string().optional(),
+  sub_category: z.string().optional(),
+  vendor_id: z.string().optional(),
   product_name: z.string().min(3, "Minimum 3 characters required"),
   price_day: z.coerce.number().min(1, "Price per day must be at least 1"),
   price_hour: z.coerce.number().min(1, "Price per hour must be at least 1"),
@@ -41,14 +47,17 @@ function Product() {
   const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate } = useGetProduct();
-  // const { user } = useGetlo();
-
+  const user = getVendorInfo();
+  const { subcategory } = useGetSubCategoryWithSlug(user?.data?.category || 'equipment');
   const product: Product | undefined = location.state?.product;
   const defaultValues: FormData = {
     product_id: product?.product_id ?? undefined,
+    vendor_id: product?.vendor_id ?? undefined,
+    category: product?.category || user?.data?.category,
+    sub_category: product?.sub_category || "",
     product_name: product?.product_name || "",
-    price_day: Number(product?.price_day ?? 0),
-    price_hour: Number(product?.price_hour ?? 0),
+    price_day: Number(product?.price_day ?? 1),
+    price_hour: Number(product?.price_hour ?? 1),
     description: product?.description || "",
     product_image: undefined,
     active: product?.active ?? "1",
@@ -73,6 +82,10 @@ function Product() {
     const formData = new FormData();
     if (data.product_id)
       formData.append("product_id", data.product_id.toString());
+
+    formData.append("vendor_id", user?.id ?? "");
+    formData.append("category", data.category ?? "");
+    formData.append("sub_category", data.sub_category ?? "");
 
     formData.append("product_name", data.product_name);
     formData.append("price_hour", data.price_hour.toString());
@@ -112,6 +125,45 @@ function Product() {
           <h2 className="text-2xl font-bold text-[var(--primary)]">
             {product ? "Edit Product" : "Create Product"}
           </h2>
+          <FormField
+            control={control}
+            name="sub_category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select Sub Services</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+
+                    // Find the selected subcategory
+                    const selected = subcategory?.find((s) => s.slug === value);
+
+                    // Update product_name automatically
+                    if (selected) {
+                      form.setValue("product_name", selected.subcategory_name || '');
+                    }
+                  }}
+                  value={field.value}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a sub service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Services</SelectLabel>
+                      {subcategory?.map((data) => (
+                        <SelectItem key={data.slug} value={data.slug || ""}>
+                          {data.subcategory_name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
 
           {/* product Name */}
           <FormField
@@ -121,12 +173,13 @@ function Product() {
               <FormItem>
                 <FormLabel>Product Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter product name" />
+                  <Input {...field} readOnly placeholder="Enter product name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
 
           {/*Price Per Day  */}
           <FormField

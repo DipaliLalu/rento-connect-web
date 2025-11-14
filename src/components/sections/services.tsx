@@ -5,7 +5,7 @@ function Services() {
   const { category = [] } = useGetCategory();
   const navigate=useNavigate();
   const handleClick = (slug:any) => {
-    navigate(`/category?type=${slug}`)
+    navigate(`/${slug}`)
   }
   return (
     <section className="flex flex-col gap-5 text-center mt-20">

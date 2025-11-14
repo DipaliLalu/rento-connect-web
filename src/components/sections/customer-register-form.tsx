@@ -17,14 +17,14 @@ const formSchema = z.object({
         .string()
         .min(1, "Contact number is required")
         .regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits"),
-    alternativecontact: z.string().regex(/^[0-9]{10}$/, "Alternavtive Contact number must be exactly 10 digits").optional(),
-    email: z.string().email("Invalid email").regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits"),
+    alternativecontact: z.string().optional(),
+    email: z.string().email("Invalid email"),
     password: z
         .string()
         .min(6, "Password must be at least 6 characters")
         .max(10, "Password must not exceed 10 characters")
         .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,10}$/, "Password must include letters and numbers"),
-    category: z.string(),
+    category: z.string().min(1, "Catgory is required"),
     state: z.string().min(1, "State is required"),
     pincode: z.string().min(1, "Pincode is required"),
     city: z.string().min(1, "City is required"),
@@ -118,6 +118,7 @@ export default function CustomerRegistrationForm() {
                                         className="bg-gray-100 dark:bg-gray-800"
                                         placeholder="Enter your contact number"
                                         {...field}
+                                        max={10}
                                     />
                                 </FormControl>
                                 <FormMessage />

@@ -1,5 +1,8 @@
 export type Product = {
     product_id?: string | null;
+    vendor_id?: string | null;
+    category?: string ;
+    sub_category?: string ;
     product_name?: string;
     price_hour?: number | string;
     price_day?: number | string;

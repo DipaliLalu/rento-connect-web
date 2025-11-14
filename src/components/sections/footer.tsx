@@ -1,7 +1,9 @@
 import { FaLinkedin, FaInstagram, FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { getVendorInfo } from "../../utils/vendor-utils";
 
 function Footer() {
+  const user = getVendorInfo();
   return (
     <footer className="bg-secondary text-secondary-foreground border-t px-10">
       <div className="py-8">
@@ -26,25 +28,39 @@ function Footer() {
             <h3 className="font-headline font-bold text-blue-950 text-lg">Services</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link to="/category?type=equipment" className="text-muted-foreground hover:text-primary">
+                <Link to="/equipment" className="text-muted-foreground hover:text-primary">
                   Equipment Rental
                 </Link>
               </li>
               <li>
-                <Link to="/category?type=experts" className="text-muted-foreground hover:text-primary">
+                <Link to="/experts" className="text-muted-foreground hover:text-primary">
                   Expert Hiring
                 </Link>
               </li>
               <li>
-                <Link to="/category?type=mobility" className="text-muted-foreground hover:text-primary">
+                <Link to="/mobility" className="text-muted-foreground hover:text-primary">
                   Mobility Solutions
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="text-muted-foreground hover:text-primary">
-                  Vendor Dashboard
+                <Link
+                  to={
+                    !user
+                      ? "/login"
+                      : user.role === "customer"
+                        ? "/customer-dashboard"
+                        : "/vendor-dashboard"
+                  }
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  {!user
+                    ? "Vendor Dashboard"
+                    : user.role === "customer"
+                      ? "Customer Dashboard"
+                      : "Vendor Dashboard"}
                 </Link>
               </li>
+
             </ul>
           </div>
 

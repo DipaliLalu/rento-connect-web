@@ -20,14 +20,14 @@ import { registerBooking } from "../../actions/booking";
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     contact: z.string().min(1, "Contact number is required"),
-    email: z.string().email("Invalid email"),
-    subcategory: z.string(),
-    category:z.string().optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
+    subcategory: z.string().min(1, "Subcategory is required"),
+    category: z.string().min(1, "Category is required"),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
     location: z.string().min(1, "Location is required"),
-    customer_id: z.string().optional(),
-    gstin: z.string().optional(),
+    customer_id: z.string().min(1, "Customer ID is required"),
+    gstin: z.string().min(1, "GSTIN is required"),
     description: z.string().min(3, "Minimum 3 characters required"),
 });
 
@@ -45,7 +45,7 @@ export default function RequestQuoteForm({
             contact: "",
             email: "",
             subcategory: subcategory || "",
-            category:"",
+            category: "",
             location: "",
             description: "",
             customer_id: "",
@@ -67,7 +67,7 @@ export default function RequestQuoteForm({
                 description: "",
                 customer_id: customer.id || "",
                 gstin: customer.gstin || "",
-                category:customer.category||"",
+                category: customer.category || "",
             });
         }
     }, [customer, reset, subcategory]);
@@ -229,7 +229,7 @@ export default function RequestQuoteForm({
                                 <FormControl>
                                     <Input
                                         className="bg-gray-100 dark:bg-gray-800"
-                                      type="date"
+                                        type="date"
                                         {...field}
                                     />
                                 </FormControl>
