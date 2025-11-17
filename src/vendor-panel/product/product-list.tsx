@@ -29,6 +29,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { getVendorInfo } from "../../utils/vendor-utils";
 
 
 export default function ProductList() {
@@ -41,6 +42,12 @@ export default function ProductList() {
   const [rowSelection, setRowSelection] = React.useState({});
   const { products, isLoading, mutate } = useGetProduct();
   const navigate = useNavigate();
+  const user=getVendorInfo();
+  const filterData=products?.filter((data)=>{
+    return(
+      (data.vendor_id == user?.id)
+    )
+  })
 
   // 🧹 Deletion logic (with revalidation)
   async function handleDelete(id: number) {
@@ -81,12 +88,12 @@ export default function ProductList() {
         <div style={{ width: "200px" }}>Description</div>
       ),
       cell: ({ row }) => (
-        <div  style={{ width: "300px", whiteSpace: "pre-wrap", }}>
+        <div style={{ width: "300px", whiteSpace: "pre-wrap", }}>
           {row.original.description}
         </div>
       ),
     }
-,
+    ,
     {
       accessorKey: "product_image",
       header: () => <div>Image</div>,
@@ -148,7 +155,7 @@ export default function ProductList() {
   ];
 
   const table = useReactTable({
-    data: products || [],
+    data: filterData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

@@ -12,4 +12,5 @@ export type Booking = {
   endDate: string;  
   active?: string;  
   deleted?: string; 
+  category?:string;
 };

@@ -148,7 +148,7 @@ function SubCategoryForm() {
           className="w-full p-10 rounded-xl flex flex-col gap-6"
         >
           <h2 className="text-2xl font-bold text-[var(--primary)]">
-            {subcategory ? "Edit Subcategory" : "Create Subcategory"}
+            {subcategory ? "Edit Subservice" : "Create Subservice"}
           </h2>
 
 
@@ -164,11 +164,11 @@ function SubCategoryForm() {
                   value={field.value}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Choose a category" />
+                    <SelectValue placeholder="Choose a service" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Categories</SelectLabel>
+                      <SelectLabel>Services</SelectLabel>
                       {category?.map((data) => (
                         <SelectItem
                           key={data.slug}
@@ -222,9 +222,9 @@ function SubCategoryForm() {
             name="subcategory_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Subcategory Name</FormLabel>
+                <FormLabel>Subservice Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter subcategory name" />
+                  <Input {...field} placeholder="Enter subservice name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -267,7 +267,7 @@ function SubCategoryForm() {
             name="subcategory_image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Subcategory Image (WebP)</FormLabel>
+                <FormLabel>Subservice Image (WebP)</FormLabel>
                 <FormControl>
                   <Input
                     type="file"

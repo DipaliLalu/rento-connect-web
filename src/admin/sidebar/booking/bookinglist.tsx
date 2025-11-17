@@ -28,6 +28,7 @@ import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { activeBooking, deleteBooking, useGetBookingList } from "../../../actions/booking";
 import type { Booking } from "../../../types/booking";
+import { getUserInfo } from "../../../utils/utils";
 
 
 export default function BookingList() {
@@ -39,7 +40,51 @@ export default function BookingList() {
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const { bookings, isLoading, mutate } = useGetBookingList();
+    const user = getUserInfo();
     // const navigate = useNavigate();
+
+    // user roles normalized to lowercase
+    const userRoles: string[] = (user?.data?.roles ?? []).map((r: string) =>
+        String(r).toLowerCase()
+    );
+    // Extract unique categories from bookings
+    const categories = React.useMemo(() => {
+        const list = bookings?.map((b) => b.category ?? "") ?? [];
+        const unique = Array.from(new Set(list));
+
+        // HR → show all categories + "all"
+        if (userRoles.includes("hr")) {
+            return ["all", ...unique];
+        }
+
+        // Normal user → show only categories matching userRoles
+        const filtered = unique.filter((cat) =>
+            userRoles.includes(String(cat).toLowerCase())
+        );
+
+        return filtered;
+    }, [bookings, userRoles]);
+
+    const [selectedCategory, setSelectedCategory] = React.useState("all");
+    const filteredBookings = React.useMemo(() => {
+        if (selectedCategory === "all") return bookings || [];
+        return (bookings || []).filter((b) => b.category === selectedCategory);
+    }, [bookings, selectedCategory]);
+
+    const didSetDefault = React.useRef(false);
+
+    React.useEffect(() => {
+        if (!categories.length) return;
+        if (didSetDefault.current) return; // ❗ stop overriding after first time
+
+        if (userRoles.includes("hr")) {
+            setSelectedCategory("all");
+        } else {
+            setSelectedCategory(categories[0]);
+        }
+
+        didSetDefault.current = true; // prevent future overrides
+    }, [categories, userRoles]);
 
     // 🧹 Deletion logic (with revalidation)
     async function handleDelete(id: number) {
@@ -88,7 +133,7 @@ export default function BookingList() {
             header: "Location",
             cell: ({ row }) => <div>{row.getValue("location")}</div>,
         },
-            {
+        {
             accessorKey: "startDate",
             header: "Start Date",
             cell: ({ row }) => <div>{row.getValue("startDate")}</div>,
@@ -102,7 +147,7 @@ export default function BookingList() {
             accessorKey: "active",
             header: () => <div>Status</div>,
             cell: ({ row }) => {
-                 const vendor = row.original;
+                const vendor = row.original;
                 const isActive = row.getValue("active") == 1;
                 return (
                     <Button
@@ -110,7 +155,7 @@ export default function BookingList() {
                             ? "bg-green-500 hover:bg-green-600"
                             : "bg-red-500 hover:bg-red-600"
                             }`}
-                       onClick={() => handleActiveVendor(Number(vendor.id))}
+                        onClick={() => handleActiveVendor(Number(vendor.id))}
                     >
                         {isActive ? "Active" : "Inactive"}
                     </Button>
@@ -137,7 +182,7 @@ export default function BookingList() {
     ];
 
     const table = useReactTable({
-        data: bookings || [],
+        data: filteredBookings || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -166,38 +211,70 @@ export default function BookingList() {
         <div className="w-full p-4">
             {/* Filter + Columns */}
             <div className="flex items-center py-4 gap-4">
+
+                {/* Search Filter */}
                 <Input
-                    placeholder="Filter name..."
-                    value={
-                        (table.getColumn("name")?.getFilterValue() as string) ?? ""
-                    }
+                    placeholder="Filter by name..."
+                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(e) =>
                         table.getColumn("name")?.setFilterValue(e.target.value)
                     }
                     className="max-w-sm"
                 />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((col) => col.getCanHide())
-                            .map((col) => (
-                                <DropdownMenuCheckboxItem
-                                    key={col.id}
-                                    checked={col.getIsVisible()}
-                                    onCheckedChange={(val) => col.toggleVisibility(!!val)}
-                                    className="capitalize"
-                                >
-                                    {col.id}
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+
+                {/* RIGHT SIDE OPTIONS */}
+                <div className="ml-auto flex items-center gap-4">
+
+                    {/* Category Dropdown */}
+                    <Select
+                        value={selectedCategory}
+                        onValueChange={(value) => setSelectedCategory(value)}
+                    >
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Select Category" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                            {categories.length === 0 ? (
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
+                                    No categories available
+                                </div>
+                            ) : (
+                                categories.map((cat) => (
+                                    <SelectItem key={cat} value={cat}>
+                                        {cat === "all" ? "All Categories" : cat}
+                                    </SelectItem>
+                                ))
+                            )}
+                        </SelectContent>
+                    </Select>
+
+
+                    {/* Columns Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((col) => col.getCanHide())
+                                .map((col) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={col.id}
+                                        checked={col.getIsVisible()}
+                                        onCheckedChange={(val) => col.toggleVisibility(!!val)}
+                                        className="capitalize"
+                                    >
+                                        {col.id}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                </div>
             </div>
 
             {/* Table */}

@@ -45,6 +45,49 @@ export default function ActiveVendorlist() {
         : user?.data.roles;
     const { vendor, isLoading } = useGetActiveVendorList(categoryParam);
     // const navigate = useNavigate();
+    const userRoles: string[] = (user?.data?.roles ?? []).map((r: string) =>
+        String(r).toLowerCase()
+    );
+
+    const categories = React.useMemo(() => {
+        const list = vendor?.map((b) => b.category ?? "") ?? [];
+        const unique = Array.from(new Set(list));
+
+        // HR → show all categories + "all"
+        if (userRoles.includes("hr")) {
+            return ["all", ...unique];
+        }
+
+        // Normal user → show only categories matching userRoles
+        const filtered = unique.filter((cat) =>
+            userRoles.includes(String(cat).toLowerCase())
+        );
+
+        return filtered;
+    }, [vendor, userRoles]);
+
+    const [selectedCategory, setSelectedCategory] = React.useState("all");
+
+    // Filter vendor data by category
+    const filteredData = React.useMemo(() => {
+        if (selectedCategory === "all") return vendor || [];
+        return (vendor || []).filter((v) => v.category === selectedCategory);
+    }, [vendor, selectedCategory]);
+
+    const didSetDefault = React.useRef(false);
+
+    React.useEffect(() => {
+        if (!categories.length) return;
+        if (didSetDefault.current) return; // ❗ stop overriding after first time
+
+        if (userRoles.includes("hr")) {
+            setSelectedCategory("all");
+        } else {
+            setSelectedCategory(categories[0]);
+        }
+
+        didSetDefault.current = true; // prevent future overrides
+    }, [categories, userRoles]);
 
     // 🧹 Deletion logic (with revalidation)
     // async function handleDelete(id: number) {
@@ -105,7 +148,7 @@ export default function ActiveVendorlist() {
                 const isActive = row.getValue("active") == 1;
                 return (
                     <Button
-                        className={`px-3 py-1 text-white rounded ${isActive
+                        className={`px-3 py-1 text-white rounded cursor-not-allowed ${isActive
                             ? "bg-green-500 hover:bg-green-600"
                             : "bg-red-500 hover:bg-red-600"
                             }`}
@@ -135,7 +178,7 @@ export default function ActiveVendorlist() {
     ];
 
     const table = useReactTable({
-        data: vendor || [],
+        data: filteredData || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -162,40 +205,73 @@ export default function ActiveVendorlist() {
 
     return (
         <div className="w-full p-4">
-            {/* Filter + Columns */}
-            <div className="flex items-center py-4 gap-4">
+            {/* ---------------- FILTER BAR ---------------- */}
+            <div className="flex items-center py-4 gap-4 w-full">
+
+                {/* Search Input */}
                 <Input
-                    placeholder="Filter name..."
-                    value={
-                        (table.getColumn("name")?.getFilterValue() as string) ?? ""
-                    }
+                    placeholder="Search by vendor name..."
+                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(e) =>
                         table.getColumn("name")?.setFilterValue(e.target.value)
                     }
                     className="max-w-sm"
                 />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((col) => col.getCanHide())
-                            .map((col) => (
-                                <DropdownMenuCheckboxItem
-                                    key={col.id}
-                                    checked={col.getIsVisible()}
-                                    onCheckedChange={(val) => col.toggleVisibility(!!val)}
-                                    className="capitalize"
-                                >
-                                    {col.id}
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+
+                {/* RIGHT SIDE — Category + Columns */}
+                <div className="flex items-center gap-4 ml-auto">
+
+                    {/* Category Dropdown */}
+                    <Select
+                        value={selectedCategory}
+                        onValueChange={(value) => setSelectedCategory(value)}
+                    >
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Select Category" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                            {categories.length === 0 ? (
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
+                                    No categories available
+                                </div>
+                            ) : (
+                                categories.map((cat) => (
+                                    <SelectItem key={cat} value={cat}>
+                                        {cat === "all" ? "All Categories" : cat}
+                                    </SelectItem>
+                                ))
+                            )}
+                        </SelectContent>
+                    </Select>
+
+
+                    {/* Columns Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((col) => col.getCanHide())
+                                .map((col) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={col.id}
+                                        checked={col.getIsVisible()}
+                                        onCheckedChange={(val) => col.toggleVisibility(!!val)}
+                                        className="capitalize"
+                                    >
+                                        {col.id}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                </div>
             </div>
 
             {/* Table */}

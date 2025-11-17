@@ -24,7 +24,7 @@ export async function addCategory(data: FormData) {
       data,
       headers: {
         "Content-Type": "multipart/form-data",
-         "X-API-KEY": "rentosupersecretkey102"
+        "X-API-KEY": "rentosupersecretkey102"
       },
     });
     if (res?.data?.status === true) {
@@ -50,13 +50,13 @@ export async function updateCategory(category_id: number, data: FormData) {
       data,
       headers: {
         "Content-Type": "multipart/form-data",
-         "X-API-KEY": "rentosupersecretkey102"
+        "X-API-KEY": "rentosupersecretkey102"
       },
     });
 
     if (res?.data?.response === true) {
       toast.success(res.data.message || "Category updated successfully");
-      console.log('update data:',res.data.data);
+      console.log('update data:', res.data.data);
       return res.data;
     } else {
       throw new Error(res?.data?.message || "Update operation failed");
@@ -98,8 +98,12 @@ export function useGetCategory(searchFor?: string) {
 export async function deleteCategory(id: number) {
   try {
     const res = await axiosInstance({
-      method: "PUT",
+      method: "DELETE",
       url: endpoints.category.delete(id),
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "X-API-KEY": "rentosupersecretkey102"
+      },
     });
 
     if (res?.data?.status === true) {

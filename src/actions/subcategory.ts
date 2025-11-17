@@ -24,7 +24,7 @@ export async function addSubCategory(data: FormData) {
       data,
       headers: {
         "Content-Type": "multipart/form-data",
-         "X-API-KEY": "rentosupersecretkey102"
+        "X-API-KEY": "rentosupersecretkey102"
       },
     });
     if (res?.data?.status === true) {
@@ -50,7 +50,7 @@ export async function updateSubCategory(category_id: number, data: FormData) {
       data,
       headers: {
         "Content-Type": "multipart/form-data",
-         "X-API-KEY": "rentosupersecretkey102"
+        "X-API-KEY": "rentosupersecretkey102"
       },
     });
 
@@ -121,11 +121,15 @@ export function useGetMobilitySubCategory(searchFor?: string) {
 export async function deleteSubCategory(id: number) {
   try {
     const res = await axiosInstance({
-      method: "PUT",
+      method: "DELETE",
       url: endpoints.subcategory.delete(id),
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "X-API-KEY": "rentosupersecretkey102"
+      },
     });
 
-    if (res?.data?.status === true) {
+    if (res?.data?.response === true) {
       toast.success(res.data.message || "Sub Category delete successfully");
     } else {
       throw new Error(res?.data?.message || "Delete operation failed");
