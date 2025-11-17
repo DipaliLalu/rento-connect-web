@@ -10,6 +10,8 @@ import { useGetCategory } from "../../actions/category";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 import { Link } from "react-router-dom";
 import { registerCustomer } from "../../actions/customer";
+import { Alert, AlertDescription } from "../ui/alert";
+import { useState } from "react";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -36,6 +38,7 @@ const formSchema = z.object({
 
 export default function CustomerRegistrationForm() {
     const { category } = useGetCategory();
+    const [message, setMessage] = useState<object | null>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -74,8 +77,10 @@ export default function CustomerRegistrationForm() {
 
             await registerCustomer(formData);
             reset();
-        } catch (err) {
+            setMessage(null);
+        } catch (err:any) {
             console.error("Failed to submit customer:", err);
+            setMessage(err?.message);
         }
     };
 
@@ -86,6 +91,15 @@ export default function CustomerRegistrationForm() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6 px-1 sm:px-6 md:px-8"
             >
+                {message && (
+                    <Alert variant="destructive">
+                        {Object.entries(message).map(([key, value]) => (
+                            <AlertDescription key={key} className="capitalize">
+                                {value}
+                            </AlertDescription>
+                        ))}
+                    </Alert>
+                )}
                 {/* Name */}
                 <FormField
                     control={form.control}

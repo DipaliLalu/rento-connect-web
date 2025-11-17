@@ -4,6 +4,7 @@ export type Product = {
     category?: string ;
     sub_category?: string ;
     product_name?: string;
+    location?: string;
     price_hour?: number | string;
     price_day?: number | string;
     slug?: string;

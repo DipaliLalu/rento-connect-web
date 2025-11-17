@@ -26,6 +26,7 @@ const schema = z.object({
   price_day: z.coerce.number().min(1, "Price per day must be at least 1"),
   price_hour: z.coerce.number().min(1, "Price per hour must be at least 1"),
   description: z.string().min(3, "Minimum 3 characters required"),
+  location: z.string().min(1, "Location is required"),
   product_image: z
     .any()
     .refine((file) => !file || file[0]?.type === "image/webp", {
@@ -50,6 +51,7 @@ function Product() {
   const user = getVendorInfo();
   const { subcategory } = useGetSubCategoryWithSlug(user?.data?.category || 'equipment');
   const product: Product | undefined = location.state?.product;
+  
   const defaultValues: FormData = {
     product_id: product?.product_id ?? undefined,
     vendor_id: product?.vendor_id ?? undefined,
@@ -60,6 +62,7 @@ function Product() {
     price_hour: Number(product?.price_hour ?? 1),
     description: product?.description || "",
     product_image: undefined,
+    location: product?.location || user?.data?.location || '',
     active: product?.active ?? "1",
     metadata: product?.metadata || "",
     metatag: product?.metatag || "",
@@ -75,15 +78,16 @@ function Product() {
     control,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting ,errors},
   } = form;
-
+console.log(errors)
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const formData = new FormData();
     if (data.product_id)
       formData.append("product_id", data.product_id.toString());
 
     formData.append("vendor_id", user?.id ?? "");
+    formData.append("location", user?.data?.location ?? "");
     formData.append("category", data.category ?? "");
     formData.append("sub_category", data.sub_category ?? "");
 

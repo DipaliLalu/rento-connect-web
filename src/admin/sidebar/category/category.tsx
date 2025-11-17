@@ -111,7 +111,7 @@ function Category() {
           className="w-full p-10 rounded-xl flex flex-col gap-6"
         >
           <h2 className="text-2xl font-bold text-[var(--primary)]">
-            {category ? "Edit Category" : "Create Category"}
+            {category ? "Edit Services" : "Create Services"}
           </h2>
 
           {/* Category Name */}
@@ -120,23 +120,23 @@ function Category() {
             name="category_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category Name</FormLabel>
+                <FormLabel>Service Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter category name" />
+                  <Input {...field} placeholder="Enter service name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* Category Name */}
+          {/* Service Name */}
           <FormField
             control={control}
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category Title</FormLabel>
+                <FormLabel>Service Title</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter category title" />
+                  <Input {...field} placeholder="Enter service title" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -148,9 +148,9 @@ function Category() {
             name="heading"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category Heading</FormLabel>
+                <FormLabel>Service Heading</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter category heading" />
+                  <Input {...field} placeholder="Enter service heading" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,9 +163,9 @@ function Category() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category Description</FormLabel>
+                <FormLabel>Service Description</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter category description" />
+                  <Input {...field} placeholder="Enter service description" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -178,7 +178,7 @@ function Category() {
             name="category_image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category Image</FormLabel>
+                <FormLabel>Service Image</FormLabel>
                 <FormControl>
                   <Input
                     type="file"

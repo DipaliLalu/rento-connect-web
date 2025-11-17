@@ -19,7 +19,7 @@ const formSchema = z.object({
     alternativecontact: z.string().regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits").optional(),
     email: z.string().email("Invalid email").min(1, "Email is required"),
     password: z.string().min(6, "Min 6 characters"),
-    category: z.string(),
+    category: z.string().min(1, "Service is required"),
     state: z.string().min(1, "State is required"),
     pincode: z.string().min(1, "Pincode is required"),
     city: z.string().min(1, "City is required"),
@@ -30,9 +30,13 @@ const formSchema = z.object({
     availability: z.enum(["full-time", "part-time", "on-call"]),
     id_proof: z
         .any()
-        .refine((file) => !file || (file instanceof FileList && file.length > 0), {
-            message: "Id Proof is required",
-        }),
+        .refine(
+            (file) =>
+                (file instanceof FileList && file.length > 0) ||
+                (file instanceof File),
+            { message: "Id Proof is required" }
+        ),
+
 });
 
 export default function VendorRegistrationForm() {
@@ -49,7 +53,7 @@ export default function VendorRegistrationForm() {
             alternativecontact: "",
             email: "",
             password: "",
-            category: category?.[0]?.slug || "",
+            category: category?.[0]?.slug,
             address: "",
             pincode: "",
             state: "",

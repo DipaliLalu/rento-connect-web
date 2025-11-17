@@ -16,55 +16,67 @@ function EquipmentCategoryPage() {
     const user = getVendorInfo();
 
     const { products } = useGetProductWithSlug(categoryKey);
-    console.log(products)
-    // 🔍 Local states for filters
+
     const [equipmentSearch, setEquipmentSearch] = useState("");
     const [locationSearch, setLocationSearch] = useState("");
-    const [filteredData, setFilteredData] = useState<any[]>([]);
 
-    // Filter handler
-    const handleSearch = () => {
-        if (!subcategory) return;
+    /** ---------------------------------------------------------
+     *  STEP 1 → Filter products by location + group by subcategory
+     * --------------------------------------------------------- */
+    const productMap: Record<string, any[]> = {};
 
-        // 🧠 If both search boxes empty, show all
-        if (!equipmentSearch.trim() && !locationSearch.trim()) {
-            setFilteredData(subcategory);
+    products?.forEach((p: any) => {
+        // Location filter
+        if (
+            locationSearch.trim() &&
+            !p.location?.toLowerCase().includes(locationSearch.toLowerCase())
+        ) {
             return;
         }
 
-        const filtered = subcategory.filter((item: any) => {
-            const matchesEquipment = item.subcategory_name
-                .toLowerCase()
-                .includes(equipmentSearch.toLowerCase());
-            const matchesLocation = item.location
-                ? item.location.toLowerCase().includes(locationSearch.toLowerCase())
-                : true; // ignore location if not present
-            return matchesEquipment && matchesLocation;
-        });
+        if (!productMap[p.sub_category]) {
+            productMap[p.sub_category] = [];
+        }
+        productMap[p.sub_category].push(p);
+    });
 
-        setFilteredData(filtered);
-    };
+    /** ---------------------------------------------------------
+     *  STEP 2 → pick minimum price product for each subcategory
+     * --------------------------------------------------------- */
+    const minPriceProducts: Record<string, any> = {};
 
-    // Show all if no search text or filtered data
+    Object.keys(productMap).forEach((key) => {
+        minPriceProducts[key] = productMap[key].reduce((min, curr) =>
+            curr.price_day < min.price_day ? curr : min
+        );
+    });
+
+    /** ---------------------------------------------------------
+     *  STEP 3 → filter subcategories by equipment name
+     * --------------------------------------------------------- */
+    const filteredSubcategories = subcategory?.filter((item: any) =>
+        item.subcategory_name.toLowerCase().includes(equipmentSearch.toLowerCase())
+    );
+
+    /** ---------------------------------------------------------
+     *  STEP 4 → displayData logic
+     *  Only show subcategories that have minimum-price product
+     *  after location filtering
+     * --------------------------------------------------------- */
     const displayData =
         !equipmentSearch.trim() && !locationSearch.trim()
             ? subcategory
-            : filteredData;
-
+            : filteredSubcategories?.filter((item: any) => minPriceProducts[item.slug]);
 
     const handleRequestQuote = (data: any) => {
         if (user == null) {
             navigate("/login");
-        } else if (user?.role == "customer") {
+        } else if (user?.role === "customer") {
             navigate("/request-quote", { state: { data } });
         } else {
             navigate("/login");
         }
     };
-    // Auto filter when typing
-    useEffect(() => {
-        handleSearch();
-    }, [equipmentSearch, locationSearch]);
 
     return (
         <>
@@ -75,7 +87,6 @@ function EquipmentCategoryPage() {
                     style={{
                         backgroundImage: "url('https://placehold.co/1920x1080.png')",
                     }}
-                    data-ai-hint="industrial machinery"
                 ></div>
 
                 <div className="relative flex flex-col gap-8 justify-center items-center text-center px-5">
@@ -88,10 +99,10 @@ function EquipmentCategoryPage() {
                     </p>
                 </div>
 
-                {/* 🔍 Search Section */}
+                {/* Search Section */}
                 <div className="absolute bottom-[-5.5rem] sm:bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-full px-4 md:px-10">
                     <div className="mx-auto w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-
+                        
                         {/* Equipment Search */}
                         <div className="flex items-center flex-1 border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2 sm:px-4 sm:py-3">
                             <Search className="w-5 h-5 text-gray-500 mr-2" />
@@ -130,41 +141,32 @@ function EquipmentCategoryPage() {
 
                         {/* Search Button */}
                         <div className="flex justify-center items-center px-3 py-2 sm:px-4 sm:py-3">
-                            <Button
-                                onClick={handleSearch}
-                                className="w-full md:w-auto px-6 py-3 sm:px-10 sm:py-5 text-sm sm:text-base rounded-md"
-                            >
+                            <Button className="w-full md:w-auto px-6 py-3 sm:px-10 sm:py-5 text-sm sm:text-base rounded-md">
                                 Search
                             </Button>
                         </div>
                     </div>
                 </div>
-
             </section>
 
             {/* Equipment Cards */}
             <section className="relative py-28 md:py-36 px-5 md:px-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {isLoading && (
-                        <>
-                            {[...Array(4)].map((_, i) => (
-                                <div key={i} className="flex flex-col w-full gap-5">
-                                    <Skeleton className="h-52 rounded-t-xl" />
-                                    <div className="space-y-3">
-                                        <Skeleton className="h-4" />
-                                        <Skeleton className="h-4 w-3/4" />
-                                    </div>
+
+                    {isLoading &&
+                        [...Array(4)].map((_, i) => (
+                            <div key={i} className="flex flex-col w-full gap-5">
+                                <Skeleton className="h-52 rounded-t-xl" />
+                                <div className="space-y-3">
+                                    <Skeleton className="h-4" />
+                                    <Skeleton className="h-4 w-3/4" />
                                 </div>
-                            ))}
-                        </>
-                    )}
+                            </div>
+                        ))}
 
                     {displayData && displayData?.length > 0 ? (
                         displayData.map((item: any) => {
-                            // 🔍 Find matching product for this subcategory
-                            const matchedProduct = products?.find(
-                                (p: any) => p.sub_category === item.slug
-                            );
+                            const matchedProduct = minPriceProducts[item.slug];
 
                             return (
                                 <div
@@ -216,7 +218,6 @@ function EquipmentCategoryPage() {
                             </p>
                         )
                     )}
-
                 </div>
             </section>
 
