@@ -39,7 +39,11 @@ import { useGetCategory } from "../../../actions/category";
 const schema = z.object({
   subcategory_id: z.string().optional(),
   category_slug: z.string().min(1, "Select a category"),
-  subcategory_name: z.string().min(3, "Minimum 3 characters required"),
+  subcategory_name: z
+    .string()
+    .min(3, "Minimum 3 characters required")
+    .regex(/^[A-Za-z0-9 ]+$/, "Special characters are not allowed"),
+
   heading: z.string().min(3, "Minimum 3 characters required"),
   description: z.string().min(3, "Minimum 3 characters required"),
   subcategory_image: z
@@ -56,6 +60,8 @@ const schema = z.object({
     .optional(),
   metadata: z.string().min(2, "Enter metadata"),
   metatag: z.string().min(2, "Enter metatag"),
+  price: z.string().min(1, "Enter price"),
+  display_name: z.string().min(2, "Enter your diaplay name"),
   type: z.string().optional(),
   active: z.string().default("1"),
 });
@@ -81,6 +87,8 @@ function SubCategoryForm() {
     description: subcategory?.description || "",
     metadata: subcategory?.metadata || "",
     metatag: subcategory?.metatag || "",
+    price: subcategory?.price || "",
+    display_name: subcategory?.display_name || "",
     subcategory_image: undefined,
     active: subcategory?.active?.toString() ?? "1",
     type: subcategory?.type ?? "",
@@ -113,6 +121,8 @@ function SubCategoryForm() {
 
     formData.append("category_slug", data.category_slug);
     formData.append("subcategory_name", data.subcategory_name);
+    formData.append("price", data.price);
+    formData.append("display_name", data.display_name);
     formData.append("heading", data.heading);
     formData.append("description", data.description);
     formData.append("metadata", data.metadata);
@@ -225,6 +235,32 @@ function SubCategoryForm() {
                 <FormLabel>Subservice Name</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Enter subservice name" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="display_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Subservice Display Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter subservice display name" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Subservice Price</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter subservice price" type="number" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

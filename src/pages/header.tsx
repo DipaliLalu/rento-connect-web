@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useGetCategory } from "../actions/category";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Menu, X } from "lucide-react"; // for toggle icons
@@ -11,9 +10,14 @@ type HeaderProps = {
     selectedCategory?: string | null;
     selectAll?: boolean;
 };
+const category=[ 
+{category_id: '1', category_name: 'Equipment', title: 'Heavy Equipment', created_by: 'test', heading: 'Heavy Equipment for Rent',slug:'equipment'},
+
+{category_id: '2', category_name: 'Experts', title: 'Experts On-Demand', created_by: 'test', heading: 'Experts On-Demand',slug:'experts'},
+
+{category_id: '3', category_name: 'Mobility', title: 'Mobility Solutions', created_by: 'test', heading: 'Industrial Mobility Solutions',slug:'mobility'}]
 
 function Header({ }: HeaderProps) {
-    const { category = [] } = useGetCategory();
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const user = getVendorInfo();

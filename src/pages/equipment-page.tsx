@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetSubCategoryWithSlug } from "../actions/subcategory";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -52,21 +52,28 @@ function EquipmentCategoryPage() {
     });
 
     /** ---------------------------------------------------------
-     *  STEP 3 → filter subcategories by equipment name
-     * --------------------------------------------------------- */
-    const filteredSubcategories = subcategory?.filter((item: any) =>
-        item.subcategory_name.toLowerCase().includes(equipmentSearch.toLowerCase())
-    );
-
-    /** ---------------------------------------------------------
-     *  STEP 4 → displayData logic
+     *  STEP 3 → displayData logic
      *  Only show subcategories that have minimum-price product
      *  after location filtering
      * --------------------------------------------------------- */
-    const displayData =
-        !equipmentSearch.trim() && !locationSearch.trim()
-            ? subcategory
-            : filteredSubcategories?.filter((item: any) => minPriceProducts[item.slug]);
+    const displayData = subcategory?.filter((item: any) => {
+        // Equipment name filter
+        if (
+            equipmentSearch.trim() &&
+            !item.display_name
+                .toLowerCase()
+                .includes(equipmentSearch.toLowerCase())
+        ) {
+            return false;
+        }
+
+        // Location-based product availability filter
+        if (locationSearch.trim() && !minPriceProducts[item.slug]) {
+            return false;
+        }
+
+        return true;
+    });
 
     const handleRequestQuote = (data: any) => {
         if (user == null) {
@@ -102,7 +109,7 @@ function EquipmentCategoryPage() {
                 {/* Search Section */}
                 <div className="absolute bottom-[-5.5rem] sm:bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-full px-4 md:px-10">
                     <div className="mx-auto w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-                        
+
                         {/* Equipment Search */}
                         <div className="flex items-center flex-1 border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2 sm:px-4 sm:py-3">
                             <Search className="w-5 h-5 text-gray-500 mr-2" />
@@ -184,7 +191,7 @@ function EquipmentCategoryPage() {
 
                                     <div className="flex flex-col gap-2 py-4 p-5 flex-1">
                                         <h3 className="font-semibold tracking-tight font-headline text-xl text-blue-950">
-                                            {item.subcategory_name}
+                                            {item.display_name}
                                         </h3>
                                         <p className="text-muted-foreground">{item.description}</p>
 
@@ -195,7 +202,7 @@ function EquipmentCategoryPage() {
                                             <p className="text-lg font-bold text-primary">
                                                 {matchedProduct
                                                     ? `₹${matchedProduct.price_day}/day`
-                                                    : "₹5,000/day"}
+                                                    : `₹${item.price}/day`}
                                             </p>
                                         </div>
                                     </div>
