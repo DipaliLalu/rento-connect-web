@@ -8,6 +8,7 @@ import PrivateRoute from "./components/private-route";
 import NotFound from "./components/not-found";
 import Layout from "./Layout";
 import VendorPrivateRoute from "./components/vendor-private-route";
+import { HelmetProvider } from "react-helmet-async";
 
 const Home = lazy(() => import("./pages/home"));
 const CategoryPage = lazy(() => import('./pages/category'));
@@ -54,7 +55,7 @@ const MobilityPage = lazy(() => import("./pages/mobility-page"));
 function App() {
 
   return (
-    // <HelmetProvider>
+    <HelmetProvider>
     <Router>
       <ScrollToTop />
       <Suspense fallback={<div className="text-center p-5">Loading...</div>}>
@@ -120,7 +121,7 @@ function App() {
         </Routes>
       </Suspense>
     </Router>
-    // </HelmetProvider>
+    </HelmetProvider>
   )
 }
 

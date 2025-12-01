@@ -9,6 +9,7 @@ import { Button } from '../components/ui/button';
 import { loginVendor } from '../actions/vendor';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 
 const formSchema = z.object({
@@ -43,103 +44,127 @@ function VendorLogin() {
             }
             await loginVendor(formData, navigate);
             reset();
-        } catch (err:any) {
+        } catch (err: any) {
             console.error("Failed to login:", err);
             setMessage(err?.message);
         }
     };
-
+    const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
     return (
-        <section className="flex flex-col gap-8 py-5 px-5 md:px-10">
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href="/" className="hover:text-blue-900 font-semibold">Home</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage className="font-semibold">Login</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+        <>
+            <Helmet>
+                <title>Login | Rento Connect</title>
+                <meta name="description" content="Rento Connect Equipment Experts Mobility"></meta>
+                <meta name="keywords" content="Rento Connect"></meta>
+                <meta name="author" content="Rento Connect"></meta>
+                <link rel="canonical" href={canonical} />
 
-            <main className="md:w-[500px] 2xl:w-[950px] bg-white p-2 md:p-7 rounded-lg mx-auto flex flex-col gap-3 text-center">
-                <Link to={"/"} className="flex items-center justify-center gap-2">
-                    <img
-                        src="/3D-Effects.png"
-                        alt="logo"
-                        className="object-contain"
-                        width={70}
-                        height={70}
-                    />
-                </Link>
-                <h1 className="text-2xl text-blue-950 font-bold">Login</h1>
-                <p className="text-muted-foreground">Enter your details to login to your account</p>
-                {message != null && (
-                    <Alert variant="destructive">
-                        <AlertDescription className='capitalize'>{message}</AlertDescription>
-                    </Alert>
-                )}
+                <meta property="og:title" content="Login | Rento Connect Equipment Experts Mobility" />
+                <meta property="og:site_name" content="Rento Connect"></meta>
+                <meta property="og:description" content="Rento Connect Equipment Experts Mobility" />
+                <meta property="og:image" content="https://rentoconnect.propheticdevelopers.com//3D-Effects.png"></meta>
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="800" />
+                <meta property="og:image:alt" content="Rento Connect" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={canonical} />
 
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-6 px-1 sm:px-6 md:px-8"
-                    >
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-muted-foreground">Email</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            className="bg-gray-100 dark:bg-gray-800"
-                                            placeholder="m@example.com"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                <meta name="twitter:title" content="Rento Connect" />
+                <meta name="twitter:card" content="summary_large_image"></meta>
+                <meta name="twitter:description" content="Rento Connect Equipment Experts Mobility" />
+                <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
+            </Helmet>
+            <section className="flex flex-col gap-8 py-5 px-5 md:px-10">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/" className="hover:text-blue-900 font-semibold">Home</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage className="font-semibold">Login</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+
+                <main className="md:w-[500px] 2xl:w-[950px] bg-white p-2 md:p-7 rounded-lg mx-auto flex flex-col gap-3 text-center">
+                    <Link to={"/"} className="flex items-center justify-center gap-2">
+                        <img
+                            src="/3D-Effects.png"
+                            alt="logo"
+                            className="object-contain"
+                            width={70}
+                            height={70}
                         />
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-muted-foreground">Password</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="password"
-                                            className="bg-gray-100 dark:bg-gray-800"
-                                            placeholder="Enter password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <div className="flex flex-col items-center justify-between gap-2">
-                            <Button type="submit" className="w-full bg-blue-900" disabled={isSubmitting ? true : false}>
-                                {isSubmitting ? "Submitting..." : "Login"}
-                            </Button>
-                            <p className="text-center text-sm sm:text-left">
-                                Don't have an account?{" "}
-                            </p>
-                            <div className="flex items-center justify-between gap-2">
-                                <Link to={'/customer-register'} className='text-blue-800 underline'>Sign up as a Customer</Link> <span className='text-muted-foreground'>or</span> <Link to={'/vendor-register'} className='text-blue-800 underline'>
-                                    Sign up as a Vendor</Link>
+                    </Link>
+                    <h1 className="text-2xl text-blue-950 font-bold">Login</h1>
+                    <p className="text-muted-foreground">Enter your details to login to your account</p>
+                    {message != null && (
+                        <Alert variant="destructive">
+                            <AlertDescription className='capitalize'>{message}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6 px-1 sm:px-6 md:px-8"
+                        >
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-muted-foreground">Email</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                className="bg-gray-100 dark:bg-gray-800"
+                                                placeholder="m@example.com"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-muted-foreground">Password</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="password"
+                                                className="bg-gray-100 dark:bg-gray-800"
+                                                placeholder="Enter password"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex flex-col items-center justify-between gap-2">
+                                <Button type="submit" className="w-full bg-blue-900" disabled={isSubmitting ? true : false}>
+                                    {isSubmitting ? "Submitting..." : "Login"}
+                                </Button>
+                                <p className="text-center text-sm sm:text-left">
+                                    Don't have an account?{" "}
+                                </p>
+                                <div className="flex items-center justify-between gap-2">
+                                    <Link to={'/customer-register'} className='text-blue-800 underline'>Sign up as a Customer</Link> <span className='text-muted-foreground'>or</span> <Link to={'/vendor-register'} className='text-blue-800 underline'>
+                                        Sign up as a Vendor</Link>
+                                </div>
+                                <p className='flex flex-col gap-1 justify-center items-center text-muted-foreground text-[13px]'><span>Hint:</span>
+                                    You can create a new account through the sign up page.
+                                    To create an admin, manually set the 'role' field to 'admin' and 'status' to 'approved' for a user in your Firestore 'users' collection.</p>
                             </div>
-                            <p className='flex flex-col gap-1 justify-center items-center text-muted-foreground text-[13px]'><span>Hint:</span>
-                                You can create a new account through the sign up page.
-                                To create an admin, manually set the 'role' field to 'admin' and 'status' to 'approved' for a user in your Firestore 'users' collection.</p>
-                        </div>
-                    </form>
-                </Form>
-            </main>
-        </section>
+                        </form>
+                    </Form>
+                </main>
+            </section>
+        </>
     )
 }
 

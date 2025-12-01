@@ -1,9 +1,34 @@
 import { RiFocus2Line } from "react-icons/ri";
 import { IoMdEye } from "react-icons/io";
+import { Helmet } from "react-helmet-async";
 
 function AboutPage() {
+    const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
     return (
         <>
+            <Helmet>
+                <title>About Us | Rento Connect</title>
+                <meta name="description" content="Rento Connect Equipment Experts Mobility"></meta>
+                <meta name="keywords" content="Rento Connect"></meta>
+                <meta name="author" content="Rento Connect"></meta>
+                <link rel="canonical" href={canonical} />
+
+                <meta property="og:title" content="About Us | Rento Connect Equipment Experts Mobility" />
+                <meta property="og:site_name" content="Rento Connect"></meta>
+                <meta property="og:description" content="Rento Connect Equipment Experts Mobility" />
+                <meta property="og:image" content="https://rentoconnect.propheticdevelopers.com//3D-Effects.png"></meta>
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="800" />
+                <meta property="og:image:alt" content="Rento Connect" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={canonical} />
+
+                <meta name="twitter:title" content="Rento Connect" />
+                <meta name="twitter:card" content="summary_large_image"></meta>
+                <meta name="twitter:description" content="Rento Connect Equipment Experts Mobility" />
+                <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
+            </Helmet>
+
             <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
                 <div
                     className="absolute inset-0 bg-cover bg-center opacity-10"
@@ -98,7 +123,7 @@ function AboutPage() {
             <section className="flex flex-col gap-5 text-center py-20">
                 <h2 className="font-headline text-3xl md:text-4xl font-bold text-blue-950">Meet Our Leadership</h2>
                 <p className="max-w-2xl mx-auto text-muted-foreground px-5">
-                   The driving force behind our mission.
+                    The driving force behind our mission.
                 </p>
 
                 <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6 mt-6 px-4 md:px-10">
@@ -113,7 +138,7 @@ function AboutPage() {
 
                         {/* Title */}
                         <h3 className="text-xl font-bold text-blue-950">
-                           Ravi Kumar
+                            Ravi Kumar
                         </h3>
 
                         {/* Description */}
@@ -131,7 +156,7 @@ function AboutPage() {
 
                         {/* Title */}
                         <h3 className="text-xl font-bold text-blue-950">
-                          Priya Singh
+                            Priya Singh
                         </h3>
 
                         {/* Description */}
@@ -149,7 +174,7 @@ function AboutPage() {
 
                         {/* Title */}
                         <h3 className="text-xl font-bold text-blue-950">
-                           Amit Patel
+                            Amit Patel
                         </h3>
 
                         {/* Description */}
@@ -167,15 +192,15 @@ function AboutPage() {
 
                         {/* Title */}
                         <h3 className="text-xl font-bold text-blue-950">
-                           Sunita Sharma
+                            Sunita Sharma
                         </h3>
 
                         {/* Description */}
                         <p className="text-primary mt-2">
-                           Head of Vendor Relations
+                            Head of Vendor Relations
                         </p>
                     </div>
-                
+
 
                 </div>
             </section>
