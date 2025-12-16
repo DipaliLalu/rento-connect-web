@@ -1,12 +1,10 @@
-import { FaUser } from "react-icons/fa6";
-import { MdCategory } from "react-icons/md";
 
 const data = {
   navMain: [
     {
       title: "User",
       url: "/dashboard",
-      icon: FaUser,
+      icon: "/Rento/User.png",
       isActive: true,
       items: [
         {
@@ -24,7 +22,7 @@ const data = {
     {
       title: "Services",
       url: "/dashboard",
-      icon: MdCategory,
+      icon: '/Rento/Services.png',
       isActive: true,
       items: [
         {
@@ -42,7 +40,7 @@ const data = {
     {
       title: "Sub Services",
       url: "/dashboard",
-      icon: MdCategory,
+      icon: '/Rento/SubServices.png',
       isActive: true,
       items: [
         {
@@ -60,7 +58,7 @@ const data = {
     {
       title: "Vendor",
       url: "/dashboard",
-      icon: MdCategory,
+      icon: '/Rento/Vendor.png',
       isActive: true,
       items: [
         {
@@ -78,7 +76,7 @@ const data = {
     {
       title: "Booking",
       url: "/dashboard",
-      icon: MdCategory,
+      icon: '/Rento/Booking.png',
       isActive: true,
       items: [
         {
@@ -96,7 +94,7 @@ const data = {
     {
       title: "Blog",
       url: "/dashboard",
-      icon: MdCategory,
+      icon: '/Rento/Blog.png',
       isActive: true,
       items: [
         {

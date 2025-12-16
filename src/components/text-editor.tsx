@@ -5,8 +5,16 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import "quill-better-table/dist/quill-better-table.css";
 
-// Register module ONLY ONCE (outside component)
 Quill.register("modules/better-table", QuillBetterTable, true);
+
+// 🔥 Fix: Disable Quill sanitizing inline styles
+const Clipboard = Quill.import("modules/clipboard") as any;
+class CustomClipboard extends Clipboard {
+  sanitize(html: string) {
+    return html; // keep styles
+  }
+}
+Quill.register("modules/clipboard", CustomClipboard, true);
 
 interface TextEditorProps {
   value: string;
@@ -26,10 +34,16 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
   const toggleCodeView = () => {
     if (!quillRef.current) return;
 
-    const html = quillRef.current.root.innerHTML;
-    setCodeValue(html); // Sync latest HTML
+    if (!showCode) {
+      setCodeValue(quillRef.current.root.innerHTML);
+    } else {
+      quillRef.current.clipboard.dangerouslyPasteHTML(codeValue, "silent");
+      onChange(codeValue);
+    }
+
     setShowCode(prev => !prev);
   };
+
 
   // Initialize Quill only once
   useEffect(() => {
@@ -66,10 +80,10 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
             },
           },
         },
-          keyboard: {
+        keyboard: {
           bindings: QuillBetterTable.keyboardBindings,
         },
-          clipboard: {
+        clipboard: {
           allowed: {
             tags: [
               "a", "b", "strong", "i", "em", "u", "s", "p", "h1", "h2", "h3", "h4", "h5", "h6",
@@ -99,6 +113,7 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
       return delta;
     });
 
+
     // Custom table button
     const tableButton = toolbarRef.current?.querySelector(".ql-table");
     if (tableButton) {
@@ -110,16 +125,21 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
     }
 
     // Sync Quill → Parent + Code View
+    // quill.on("text-change", () => {
+    //   const html = quill.root.innerHTML;
+    //   setCodeValue(html);
+    //   onChange(html);
+    //   quill.clipboard.dangerouslyPasteHTML(html, "silent");
+    // });
     quill.on("text-change", () => {
       const html = quill.root.innerHTML;
       setCodeValue(html);
       onChange(html);
-      quill.clipboard.dangerouslyPasteHTML(html, "silent");
     });
 
     // Set initial value
     if (value) {
-      quill.root.innerHTML = value;
+      quill.clipboard.dangerouslyPasteHTML(value, "silent");
       setCodeValue(value);
     }
 

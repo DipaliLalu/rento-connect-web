@@ -1,11 +1,10 @@
-import { FaUser } from "react-icons/fa6";
 
 const VendorData = {
   navMain: [
     {
       title: "Product",
       url: "/vendor-dashboard",
-      icon: FaUser,
+      icon: '/Rento/Vendor.png',
       isActive: true,
       items: [
         {
