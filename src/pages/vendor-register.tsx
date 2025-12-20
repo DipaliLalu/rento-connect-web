@@ -42,7 +42,7 @@ function VendorRegister() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <main className="md:w-[700px] 2xl:w-[950px] bg-white p-2 md:p-7 rounded-lg mx-auto flex flex-col gap-3 text-center">
+        <main className="md:w-[700px] 2xl:w-[950px] bg-white p-2 md:p-7 rounded-lg mx-auto flex flex-col gap-3 text-center relative">
           <Link to={"/"} className="flex items-center justify-center gap-2">
             <img
               src="/3D-Effects.png"

@@ -10,6 +10,7 @@ import { loginVendor } from '../actions/vendor';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 
 const formSchema = z.object({
@@ -87,7 +88,7 @@ function VendorLogin() {
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                <main className="md:w-[500px] 2xl:w-[950px] bg-white p-2 md:p-7 rounded-lg mx-auto flex flex-col gap-3 text-center">
+                <main className="md:w-[500px] 2xl:w-[950px] bg-white p-2 md:p-7 rounded-lg mx-auto flex flex-col gap-3 text-center relative">
                     <Link to={"/"} className="flex items-center justify-center gap-2">
                         <img
                             src="/3D-Effects.png"
@@ -98,70 +99,85 @@ function VendorLogin() {
                         />
                     </Link>
                     <h1 className="text-2xl text-blue-950 font-bold">Login</h1>
-                    <p className="text-muted-foreground">Enter your details to login to your account</p>
-                    {message != null && (
-                        <Alert variant="destructive">
-                            <AlertDescription className='capitalize'>{message}</AlertDescription>
-                        </Alert>
-                    )}
+                    {message == null && <p className="text-muted-foreground">Enter your details to login to your account</p>}
+                    {message ? (
+                        <Alert variant="destructive" className="shadow-md">
+                            {/* Close Button */}
+                            <button
+                                type="button"
+                                onClick={() => {setMessage(null)
+                                    reset();
+                                }}
+                                className="absolute md:-top-28 -top-24 rounded-full right-1 text-xl"
+                                aria-label="Close"
+                            >
+                             <IoIosCloseCircleOutline className='cursor-pointer text-slate-800' size={28}/>
+                            </button>
 
-                    <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-6 px-1 sm:px-6 md:px-8"
-                        >
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-muted-foreground">Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                className="bg-gray-100 dark:bg-gray-800"
-                                                placeholder="m@example.com"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-muted-foreground">Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                className="bg-gray-100 dark:bg-gray-800"
-                                                placeholder="Enter password"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="flex flex-col items-center justify-between gap-2">
-                                <Button type="submit" className="w-full bg-blue-900" disabled={isSubmitting ? true : false}>
-                                    {isSubmitting ? "Submitting..." : "Login"}
-                                </Button>
-                                <p className="text-center text-sm sm:text-left">
-                                    Don't have an account?{" "}
-                                </p>
-                                <div className="flex items-center justify-between gap-2">
-                                    <Link to={'/customer-register'} className='text-blue-800 underline'>Sign up as a Customer</Link> <span className='text-muted-foreground'>or</span> <Link to={'/vendor-register'} className='text-blue-800 underline'>
-                                        Sign up as a Vendor</Link>
-                                </div>
-                                <p className='flex flex-col gap-1 justify-center items-center text-muted-foreground text-[13px]'><span>Hint:</span>
-                                    You can create a new account through the sign up page.
-                                    To create an admin, manually set the 'role' field to 'admin' and 'status' to 'approved' for a user in your Firestore 'users' collection.</p>
-                            </div>
-                        </form>
-                    </Form>
+                            <AlertDescription className="capitalize font-semibold text-lg">
+                                {message}
+                            </AlertDescription>
+                        </Alert>
+                    )
+                        : (
+                            <Form {...form}>
+                                <form
+                                    onSubmit={form.handleSubmit(onSubmit)}
+                                    className="space-y-6 px-1 sm:px-6 md:px-8"
+                                >
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-muted-foreground">Email</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        className="bg-gray-100 dark:bg-gray-800"
+                                                        placeholder="m@example.com"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-muted-foreground">Password</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="password"
+                                                        className="bg-gray-100 dark:bg-gray-800"
+                                                        placeholder="Enter password"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div className="flex flex-col items-center justify-between gap-2">
+                                        <Button type="submit" className="w-full bg-blue-900" disabled={isSubmitting ? true : false}>
+                                            {isSubmitting ? "Submitting..." : "Login"}
+                                        </Button>
+                                        <p className="text-center text-sm sm:text-left">
+                                            Don't have an account?{" "}
+                                        </p>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <Link to={'/customer-register'} className='text-blue-800 underline'>Sign up as a Customer</Link> <span className='text-muted-foreground'>or</span> <Link to={'/vendor-register'} className='text-blue-800 underline'>
+                                                Sign up as a Vendor</Link>
+                                        </div>
+                                        <p className='flex flex-col gap-1 justify-center items-center text-muted-foreground text-[13px]'><span>Hint:</span>
+                                            You can create a new account through the sign up page.
+                                            To create an admin, manually set the 'role' field to 'admin' and 'status' to 'approved' for a user in your Firestore 'users' collection.</p>
+                                    </div>
+                                </form>
+                            </Form>
+                        )}
                 </main>
             </section>
         </>

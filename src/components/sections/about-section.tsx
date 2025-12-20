@@ -1,21 +1,21 @@
 function AboutSection() {
   return (
-    <section className="px-10 py-20 bg-secondary">
+    <section className="px-10 py-20 bg-blue-900 text-primary-foreground">
       <div className="">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div>
-            <h2 className="font-headline text-3xl md:text-4xl font-bold text-blue-950">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">
               About Rento Connect
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-4 text-lg text-slate-200">
               RentoConnect is a pioneering B2B on-demand platform designed to
               bridge the gap between industrial service providers and the
               businesses that need them. Our mission is to create a seamless,
               efficient, and transparent ecosystem for sourcing industrial
               solutions.
             </p>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 text-slate-200">
               We eliminate the traditional hassles of finding reliable vendors,
               negotiating terms, and managing services by bringing everything
               onto a single, powerful digital platform. Whether you need

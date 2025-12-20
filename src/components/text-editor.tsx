@@ -2,41 +2,46 @@
 import QuillBetterTable from "quill-better-table";
 import { useEffect, useRef, useState } from "react";
 import Quill from "quill";
+import Editor from "@monaco-editor/react";
+
 import "quill/dist/quill.snow.css";
 import "quill-better-table/dist/quill-better-table.css";
 
+/* ---------------- REGISTER MODULES ONCE ---------------- */
 Quill.register("modules/better-table", QuillBetterTable, true);
 
-// 🔥 Fix: Disable Quill sanitizing inline styles
+// Disable sanitization (keep styles)
 const Clipboard = Quill.import("modules/clipboard") as any;
 class CustomClipboard extends Clipboard {
   sanitize(html: string) {
-    return html; // keep styles
+    return html;
   }
 }
 Quill.register("modules/clipboard", CustomClipboard, true);
 
 interface TextEditorProps {
   value: string;
-  onChange: (content: string) => void;
+  onChange: (html: string) => void;
 }
 
 export default function TextEditor({ value, onChange }: TextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
-  const initialized = useRef(false); // Prevent double init
+  const initialized = useRef(false);
 
   const [showCode, setShowCode] = useState(false);
   const [codeValue, setCodeValue] = useState(value || "");
 
-  // ✅ TOGGLE + SYNC HTML WHEN BUTTON CLICKED
+  /* ---------------- TOGGLE HTML MODE ---------------- */
   const toggleCodeView = () => {
     if (!quillRef.current) return;
 
     if (!showCode) {
+      // Editor → Code
       setCodeValue(quillRef.current.root.innerHTML);
     } else {
+      // Code → Editor
       quillRef.current.clipboard.dangerouslyPasteHTML(codeValue, "silent");
       onChange(codeValue);
     }
@@ -44,27 +49,17 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
     setShowCode(prev => !prev);
   };
 
-
-  // Initialize Quill only once
+  /* ---------------- INIT QUILL (ONCE) ---------------- */
   useEffect(() => {
     if (!editorRef.current || !toolbarRef.current || initialized.current) return;
-
     initialized.current = true;
 
     const quill = new Quill(editorRef.current, {
       theme: "snow",
       placeholder: "Start typing...",
-      // formats: [
-      //   "bold", "italic", "underline", "strike",
-      //   "color", "background",
-      //   "header", "list", "align",
-      //   "link", "image"
-      // ],
       modules: {
         toolbar: toolbarRef.current,
-        // toolbar: [["bold", "italic", "underline", "strike"], [{ header: [1, 2, 3, false] }], [{ list: "ordered" }, { list: "bullet" }], ["link", "image"], [{ align: [] }], ["clean"], ["table"] // ✅ table button
-        // ],
-        // table: false,
+        clipboard: { matchVisual: false },
         "better-table": {
           operationMenu: {
             items: {
@@ -83,151 +78,70 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
         keyboard: {
           bindings: QuillBetterTable.keyboardBindings,
         },
-        clipboard: {
-          allowed: {
-            tags: [
-              "a", "b", "strong", "i", "em", "u", "s", "p", "h1", "h2", "h3", "h4", "h5", "h6",
-              "ul", "ol", "li", "br", "img", "table", "thead", "tbody", "tr", "th", "td", "span", "div"
-            ],
-            attributes: [
-              "class", "style", "width", "height", "colspan", "rowspan",
-              "align", "valign", "bgcolor", "border", "cellpadding", "cellspacing"
-            ],
-          },
-        },
       },
     });
 
     quillRef.current = quill;
-    quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
-      if (node instanceof HTMLElement) {
-        delta.ops?.forEach(op => {
-          if (op.insert && typeof op.insert === "string") {
-            op.attributes = {
-              ...op.attributes,
-              style: node.getAttribute("style") || undefined,
-            };
-          }
-        });
-      }
-      return delta;
-    });
 
-
-    // Custom table button
-    const tableButton = toolbarRef.current?.querySelector(".ql-table");
-    if (tableButton) {
-      tableButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        const tableModule = quill.getModule("better-table") as any;
-        tableModule.insertTable(3, 3);
-      });
-    }
-
-    // Sync Quill → Parent + Code View
-    // quill.on("text-change", () => {
-    //   const html = quill.root.innerHTML;
-    //   setCodeValue(html);
-    //   onChange(html);
-    //   quill.clipboard.dangerouslyPasteHTML(html, "silent");
-    // });
+    // Sync editor → parent
     quill.on("text-change", () => {
       const html = quill.root.innerHTML;
       setCodeValue(html);
       onChange(html);
     });
 
-    // Set initial value
+    // Initial value
     if (value) {
       quill.clipboard.dangerouslyPasteHTML(value, "silent");
       setCodeValue(value);
     }
 
-    // Cleanup
+    // Custom table button
+    const tableBtn = toolbarRef.current.querySelector(".ql-table");
+    tableBtn?.addEventListener("click", e => {
+      e.preventDefault();
+      const table = quill.getModule("better-table") as any;
+      table.insertTable(3, 3);
+    });
+
     return () => {
       quill.off("text-change");
     };
-  }, []); // Empty dependency = run once
+  }, []);
 
-  // Sync external value changes → Quill (e.g., form reset)
+  /* ---------------- EXTERNAL VALUE SYNC ---------------- */
   useEffect(() => {
     if (!quillRef.current) return;
 
-    const quill = quillRef.current;
-
-    if (value !== quill.root.innerHTML) {
-      quill.root.innerHTML = value || "";
+    if (value !== quillRef.current.root.innerHTML) {
+      quillRef.current.clipboard.dangerouslyPasteHTML(value || "", "silent");
+      setCodeValue(value || "");
     }
-
-    setCodeValue(value || "");
   }, [value]);
 
-  // // External value update SAFE
-  // useEffect(() => {
-  //   if (!quillRef.current) return;
-  //   const quill = quillRef.current;
-
-  //   if (value !== quill.root.innerHTML) {
-  //     quill.clipboard.dangerouslyPasteHTML(value, "silent");
-  //     setCodeValue(value);
-  //   }
-  // }, [value]);
-
-  // Handle direct HTML editing
-  const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const html = e.target.value;
-    setCodeValue(html);
-
-    if (!quillRef.current) return;
-
-    const quill = quillRef.current;
-    const selection = quill.getSelection();
-
-    quill.history.clear();
-    quill.root.innerHTML = html;
-
-    // Restore cursor
-    setTimeout(() => {
-      if (selection) {
-        quill.setSelection(selection);
-      }
-    }, 0);
-
-    onChange(html);
-  };
-
+  /* ---------------- UI ---------------- */
   return (
-    <div style={{ display: "flex", gap: "20px", fontFamily: "system-ui, sans-serif" }}>
-      {/* WYSIWYG Editor */}
-      <div
-        style={{ flex: 1 }}
-      >
+    <div style={{ display: "flex", gap: "20px" }}>
+      {/* WYSIWYG */}
+      <div style={{ flex: 1 }}>
         <div
           onClick={toggleCodeView}
           style={{
-            marginBottom: "6px",
-            padding: "10px 16px",
-            background: "#1e293b",
+            marginBottom: 8,
+            padding: "8px 14px",
+            background: "#0f172a",
             color: "#fff",
-            borderRadius: "8px",
+            borderRadius: 8,
+            border: "none",
             cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: "500",
-            width: "150px",
-            textAlign: "center",
+            width:"max-content"
           }}
         >
-          {showCode ? "Hide HTML Code" : "Show HTML Code"}
+          {showCode ? "Apply HTML & Close" : "Edit HTML"}
         </div>
 
         {/* Toolbar */}
-        <div ref={toolbarRef} style={{
-          border: "1px solid #e2e8f0",
-          borderBottom: "none",
-          borderRadius: "12px 12px 0 0",
-          background: "#f8fafc",
-          padding: "8px",
-        }}>
+        <div ref={toolbarRef} className="ql-toolbar ql-snow">
           <span className="ql-formats">
             <button className="ql-bold" />
             <button className="ql-italic" />
@@ -236,10 +150,10 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
           </span>
           <span className="ql-formats">
             <select className="ql-header">
-              <option value="1">Heading 1</option>
-              <option value="2">Heading 2</option>
-              <option value="3">Heading 3</option>
-              <option value="">Normal</option>
+              <option value="1" />
+              <option value="2" />
+              <option value="3" />
+              <option value="" />
             </select>
           </span>
           <span className="ql-formats">
@@ -262,39 +176,29 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
         {/* Editor */}
         <div
           ref={editorRef}
-          // onChange={handleCodeChange}
           style={{
-            height: 'auto',
-            minHeight: '350px',
-            // minHeight: '100px',
-            border: "1px solid #e2e8f0",
+            minHeight: 350,
+            border: "1px solid #e5e7eb",
             borderTop: "none",
-            borderRadius: "0 0 12px 12px",
-            background: "#fff",
+            borderRadius: "0 0 10px 10px",
           }}
         />
       </div>
 
-      {/* Live HTML Editor */}
+      {/* HTML CODE (MONACO) */}
       {showCode && (
-        <div style={{ width: "45%" }}>
-          <h4 style={{ margin: "0 0 10px 0", fontWeight: 600, color: "#1e293b" }}>
-            Live HTML Code (Editable)
-          </h4>
-          <textarea
+        <div style={{ width: "45%", height: "420px" }}>
+          <Editor
+            height="100%"
+            language="html"
+            theme="vs-dark"
             value={codeValue}
-            onChange={handleCodeChange}
-            spellCheck={false}
-            style={{
-              width: "100%",
-              height: "420px",
-              padding: "14px",
-              fontFamily: "Consolas, monospace",
-              fontSize: "13.5px",
-              border: "1px solid #334155",
-              borderRadius: "12px",
-              resize: "vertical",
-              outline: "none",
+            onChange={(val) => setCodeValue(val || "")}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 13,
+              wordWrap: "on",
+              automaticLayout: true,
             }}
           />
         </div>

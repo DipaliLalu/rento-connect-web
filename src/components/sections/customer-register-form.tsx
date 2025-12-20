@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { registerCustomer } from "../../actions/customer";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useState } from "react";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -78,7 +79,7 @@ export default function CustomerRegistrationForm() {
             await registerCustomer(formData);
             reset();
             setMessage(null);
-        } catch (err:any) {
+        } catch (err: any) {
             console.error("Failed to submit customer:", err);
             setMessage(err?.message);
         }
@@ -87,146 +88,65 @@ export default function CustomerRegistrationForm() {
 
     return (
         <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 px-1 sm:px-6 md:px-8"
-            >
-                {message && (
-                    <Alert variant="destructive">
-                        {Object.entries(message).map(([key, value]) => (
-                            <AlertDescription key={key} className="capitalize">
-                                {value}
-                            </AlertDescription>
-                        ))}
-                    </Alert>
-                )}
-                {/* Name */}
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-muted-foreground">Full Name / Company Name</FormLabel>
-                            <FormControl>
-                                <Input
-                                    className="bg-gray-100 dark:bg-gray-800"
-                                    placeholder="Enter your full name or company name"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
-                {/* Contact + Email */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {message ? (
+                <Alert variant="destructive" className="shadow-md">
+                    {/* Close Button */}
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setMessage(null)
+                            reset();
+                        }}
+                        className="absolute md:-top-36 -top-44 min-[375px]:-top-40 rounded-full right-1 text-xl"
+                        aria-label="Close"
+                    >
+                        <IoIosCloseCircleOutline className='cursor-pointer text-slate-800' size={28} />
+                    </button>
+                    {Object.entries(message).map(([key, value]) => (
+                        <AlertDescription key={key} className="capitalize font-semibold text-lg">
+                            {value}
+                        </AlertDescription>
+                    ))}
+                </Alert>
+            ) : (
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6 px-1 sm:px-6 md:px-8"
+                >
+                    {/* Name */}
                     <FormField
                         control={form.control}
-                        name="contact"
+                        name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-muted-foreground">Contact Number</FormLabel>
+                                <FormLabel className="text-muted-foreground">Full Name / Company Name</FormLabel>
                                 <FormControl>
                                     <Input
                                         className="bg-gray-100 dark:bg-gray-800"
-                                        placeholder="Enter your contact number"
+                                        placeholder="Enter your full name or company name"
                                         {...field}
-                                        max={10}
                                     />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="alternativecontact"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-muted-foreground">Alternative Contact</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        className="bg-gray-100 dark:bg-gray-800"
-                                        placeholder="Optional"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-muted-foreground">Email</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        className="bg-gray-100 dark:bg-gray-800"
-                                        placeholder="m@example.com"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-muted-foreground">Password</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="password"
-                                        className="bg-gray-100 dark:bg-gray-800"
-                                        placeholder="Enter password"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border p-3 rounded-lg">
-                    {/* Address */}
-                    <FormField
-                        control={form.control}
-                        name="address"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-muted-foreground">Company Address</FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        className="bg-gray-100 dark:bg-gray-800 h-48"
-                                        placeholder="Enter full company address"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <div className="flex flex-col gap-4">
+                    {/* Contact + Email */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                             control={form.control}
-                            name="city"
+                            name="contact"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-muted-foreground">City</FormLabel>
+                                    <FormLabel className="text-muted-foreground">Contact Number</FormLabel>
                                     <FormControl>
                                         <Input
                                             className="bg-gray-100 dark:bg-gray-800"
-                                            placeholder="Enter your city"
+                                            placeholder="Enter your contact number"
                                             {...field}
+                                            max={10}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -235,31 +155,14 @@ export default function CustomerRegistrationForm() {
                         />
                         <FormField
                             control={form.control}
-                            name="state"
+                            name="alternativecontact"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-muted-foreground">State</FormLabel>
+                                    <FormLabel className="text-muted-foreground">Alternative Contact</FormLabel>
                                     <FormControl>
                                         <Input
                                             className="bg-gray-100 dark:bg-gray-800"
-                                            placeholder="Enter your state"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="pincode"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-muted-foreground">Pincode</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            className="bg-gray-100 dark:bg-gray-800"
-                                            placeholder="Enter your pincode"
+                                            placeholder="Optional"
                                             {...field}
                                         />
                                     </FormControl>
@@ -268,50 +171,215 @@ export default function CustomerRegistrationForm() {
                             )}
                         />
                     </div>
-                </div>
 
-                {/* GST + Experience */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Category */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-muted-foreground">Email</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            className="bg-gray-100 dark:bg-gray-800"
+                                            placeholder="m@example.com"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-muted-foreground">Password</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="password"
+                                            className="bg-gray-100 dark:bg-gray-800"
+                                            placeholder="Enter password"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border p-3 rounded-lg">
+                        {/* Address */}
+                        <FormField
+                            control={form.control}
+                            name="address"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-muted-foreground">Company Address</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            className="bg-gray-100 dark:bg-gray-800 h-48"
+                                            placeholder="Enter full company address"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <div className="flex flex-col gap-4">
+                            <FormField
+                                control={form.control}
+                                name="city"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-muted-foreground">City</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                className="bg-gray-100 dark:bg-gray-800"
+                                                placeholder="Enter your city"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="state"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-muted-foreground">State</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                className="bg-gray-100 dark:bg-gray-800"
+                                                placeholder="Enter your state"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="pincode"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-muted-foreground">Pincode</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                className="bg-gray-100 dark:bg-gray-800"
+                                                placeholder="Enter your pincode"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </div>
+
+                    {/* GST + Experience */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Category */}
+                        <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                    <FormLabel className="text-muted-foreground">Type of Service</FormLabel>
+                                    <FormControl className="w-full">
+                                        <Select
+                                            onValueChange={(value) => field.onChange(value)}
+                                            value={field.value}
+                                        >
+                                            <SelectTrigger className="border">
+                                                <SelectValue placeholder="Choose a service" />
+                                            </SelectTrigger>
+                                            <SelectContent className="w-full">
+                                                <SelectGroup>
+                                                    <SelectLabel>Type of Services</SelectLabel>
+                                                    {category?.map((data) => (
+                                                        <SelectItem key={data.slug} value={data.slug || ""}>
+                                                            {data.category_name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* Location */}
+                        <FormField
+                            control={form.control}
+                            name="location"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-muted-foreground">
+                                        Service Location Coverage (States / Cities)
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input className="bg-gray-100 dark:bg-gray-800" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+
+                    {/* Availability */}
                     <FormField
                         control={form.control}
-                        name="category"
+                        name="service_frequency"
                         render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel className="text-muted-foreground">Type of Service</FormLabel>
-                                <FormControl className="w-full">
-                                    <Select
-                                        onValueChange={(value) => field.onChange(value)}
+                            <FormItem>
+                                <FormLabel className="text-muted-foreground">Service Frequency</FormLabel>
+                                <FormControl>
+                                    <RadioGroup
                                         value={field.value}
+                                        onValueChange={field.onChange}
+                                        className="flex flex-wrap gap-4"
                                     >
-                                        <SelectTrigger className="border">
-                                            <SelectValue placeholder="Choose a service" />
-                                        </SelectTrigger>
-                                        <SelectContent className="w-full">
-                                            <SelectGroup>
-                                                <SelectLabel>Type of Services</SelectLabel>
-                                                {category?.map((data) => (
-                                                    <SelectItem key={data.slug} value={data.slug || ""}>
-                                                        {data.category_name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                        <FormItem className="flex items-center">
+                                            <FormControl>
+                                                <RadioGroupItem value="one-time" />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">One-time</FormLabel>
+                                        </FormItem>
+                                        <FormItem className="flex items-center">
+                                            <FormControl>
+                                                <RadioGroupItem value="recurring" />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">Recurring</FormLabel>
+                                        </FormItem>
+                                        <FormItem className="flex items-center">
+                                            <FormControl>
+                                                <RadioGroupItem value="project-based" />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">Project-based</FormLabel>
+                                        </FormItem>
+                                    </RadioGroup>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    {/* Location */}
+
                     <FormField
                         control={form.control}
-                        name="location"
+                        name="gstin"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-muted-foreground">
-                                    Service Location Coverage (States / Cities)
-                                </FormLabel>
+                                <FormLabel className="text-muted-foreground">GSTIN / PAN</FormLabel>
                                 <FormControl>
                                     <Input className="bg-gray-100 dark:bg-gray-800" {...field} />
                                 </FormControl>
@@ -319,73 +387,20 @@ export default function CustomerRegistrationForm() {
                             </FormItem>
                         )}
                     />
-                </div>
 
-
-                {/* Availability */}
-                <FormField
-                    control={form.control}
-                    name="service_frequency"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-muted-foreground">Service Frequency</FormLabel>
-                            <FormControl>
-                                <RadioGroup
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                    className="flex flex-wrap gap-4"
-                                >
-                                    <FormItem className="flex items-center">
-                                        <FormControl>
-                                            <RadioGroupItem value="one-time" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">One-time</FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center">
-                                        <FormControl>
-                                            <RadioGroupItem value="recurring" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">Recurring</FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center">
-                                        <FormControl>
-                                            <RadioGroupItem value="project-based" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">Project-based</FormLabel>
-                                    </FormItem>
-                                </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="gstin"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-muted-foreground">GSTIN / PAN</FormLabel>
-                            <FormControl>
-                                <Input className="bg-gray-100 dark:bg-gray-800" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <div className="flex flex-col items-center justify-between gap-2">
-                    <Button type="submit" className="w-full sm:w-auto bg-blue-900" disabled={isSubmitting ? true : false}>
-                        {isSubmitting ? "Submitting..." : "Register as Customer"}
-                    </Button>
-                    <p className="text-center text-sm sm:text-left">
-                        Already have an account?{" "}
-                        <Link to="/login" className="underline">
-                            Login
-                        </Link>
-                    </p>
-                </div>
-            </form>
+                    <div className="flex flex-col items-center justify-between gap-2">
+                        <Button type="submit" className="w-full sm:w-auto bg-blue-900" disabled={isSubmitting ? true : false}>
+                            {isSubmitting ? "Submitting..." : "Register as Customer"}
+                        </Button>
+                        <p className="text-center text-sm sm:text-left">
+                            Already have an account?{" "}
+                            <Link to="/login" className="underline">
+                                Login
+                            </Link>
+                        </p>
+                    </div>
+                </form>
+            )}
         </Form>
 
     );

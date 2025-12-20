@@ -2,9 +2,9 @@ import { LuCalendarCheck, LuHandshake, LuUserPlus } from "react-icons/lu";
 
 function StepsSection() {
     return (
-        <section className="flex flex-col gap-5 text-center mt-20 mb-6 bg-[var(--color-muted-foreground)]/10 px-10 py-20">
-            <h2 className="text-4xl font-bold tracking-tight text-blue-950">Get Started in 3 Simple Steps</h2>
-            <p className="text-[var(--color-muted-foreground)]">
+        <section className="flex flex-col gap-5 text-center mt-20 mb-6  px-10 py-20 bg-blue-900 text-primary-foreground">
+            <h2 className="text-4xl font-bold tracking-tight ">Get Started in 3 Simple Steps</h2>
+            <p className="">
                 Our streamlined process makes finding industrial services faster than ever.
             </p>
 
@@ -22,8 +22,8 @@ function StepsSection() {
                             <LuUserPlus size={40} className="text-primary" />
                         </div>
                     </div>
-                    <h3 className="font-headline text-xl font-semibold mb-2 text-blue-950">Register &amp; Browse</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-headline text-xl font-semibold mb-2 ">Register &amp; Browse</h3>
+                    <p className="">
                         Create your account as a customer or vendor and explore a vast marketplace of services.
                     </p>
                 </div>
@@ -35,8 +35,8 @@ function StepsSection() {
                             <LuCalendarCheck size={40} className="text-primary" />
                         </div>
                     </div>
-                    <h3 className="font-headline text-xl font-semibold mb-2 text-blue-950">Book a Service</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-headline text-xl font-semibold mb-2 ">Book a Service</h3>
+                    <p className="">
                         Select the equipment, expert, or mobility solution you need and submit your booking inquiry.
                     </p>
                 </div>
@@ -49,8 +49,8 @@ function StepsSection() {
                         </div>
                     </div>
 
-                    <h3 className="font-headline text-xl font-semibold mb-2 text-blue-950">Connect &amp; Operate</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-headline text-xl font-semibold mb-2 ">Connect &amp; Operate</h3>
+                    <p className="">
                         Get matched with a verified provider, finalize the terms, and kickstart your operations seamlessly.
                     </p>
                 </div>
