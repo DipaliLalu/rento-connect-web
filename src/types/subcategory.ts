@@ -10,6 +10,8 @@ export type SubCategory = {
     deleted?: number;
     created_by?: string;
     metadata?: string;
+    price?: string;
+    display_name?: string;
     type?: string | null;
     metatag?: string;
 };

@@ -26,7 +26,7 @@ function Services() {
               <img
                 src={`${import.meta.env.VITE_URL}/${data.category_image}`}
                 alt={data.category_name}
-                className="w-10 h-10 object-contain"
+                className="w-20 h-14 object-contain"
               />
             </div>
 

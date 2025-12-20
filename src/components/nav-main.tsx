@@ -2,7 +2,6 @@
 
 import { ChevronRight } from "lucide-react";
 
-import type { IconType } from "react-icons/lib";
 import { Link } from "react-router-dom";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "./ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
@@ -13,7 +12,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: IconType;
+    icon?: string; // ✅ image only
     isActive?: boolean;
     items?: {
       title: string;
@@ -37,9 +36,14 @@ export function NavMain({
                 <SidebarMenuButton tooltip={item.title}>
                   {item.icon && (
                     <span className="text-[var(--primary)]">
-                      <item.icon className="w-5 h-4"/>
+                      <img
+                        src={item.icon}
+                        alt={item.title}
+                        className="w-4 h-4 object-contain"
+                      />
                     </span>
                   )}
+
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>

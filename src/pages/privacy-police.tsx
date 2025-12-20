@@ -1,6 +1,31 @@
+import { Helmet } from "react-helmet-async";
+
 function PrivacyPolice() {
+    const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
     return (
         <>
+         <Helmet>
+                <title>Privacy Police | Rento Connect</title>
+                <meta name="description" content="Rento Connect Equipment Experts Mobility"></meta>
+                <meta name="keywords" content="Rento Connect"></meta>
+                <meta name="author" content="Rento Connect"></meta>
+                <link rel="canonical" href={canonical} />
+
+                <meta property="og:title" content="Privacy Police | Rento Connect Equipment Experts Mobility" />
+                <meta property="og:site_name" content="Rento Connect"></meta>
+                <meta property="og:description" content="Rento Connect Equipment Experts Mobility" />
+                <meta property="og:image" content="https://rentoconnect.propheticdevelopers.com//3D-Effects.png"></meta>
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="800" />
+                <meta property="og:image:alt" content="Rento Connect" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={canonical} />
+
+                <meta name="twitter:title" content="Rento Connect" />
+                <meta name="twitter:card" content="summary_large_image"></meta>
+                <meta name="twitter:description" content="Rento Connect Equipment Experts Mobility" />
+                <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
+            </Helmet>
             <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
                 <div
                     className="absolute inset-0 bg-cover bg-center opacity-10"
