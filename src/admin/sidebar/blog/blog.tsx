@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import z from "zod";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../components/ui/form";
@@ -13,12 +13,23 @@ import { Checkbox } from "../../../components/ui/checkbox";
 import { addBlog, updateBLog, useGetBlogs } from "../../../actions/blog";
 import type { Blogs } from "../../../types/blogs";
 import TextEditor from "../../../components/text-editor";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../../components/ui/select";
 
 // Schema
 const schema = z.object({
   id: z.string().optional(),
   title: z.string().min(3, "Minimum 3 characters required"),
-  description: z.string().min(3, "Minimum 3 characters required"),
+  category: z.string().min(1, "Category is required"),
+  description: z
+    .string()
+    .refine((val) => {
+      const text = val
+        .replace(/<[^>]*>/g, "")
+        .replace(/&nbsp;/g, "")
+        .trim();
+      return text.length >= 3;
+    }, "Minimum 3 characters required"),
+
   image: z
     .any()
     .refine((file) => !file || (file instanceof FileList && file.length > 0), {
@@ -37,6 +48,12 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+const category =[
+  {"name": "equipment"},
+  {"name": "experts"},
+  {"name": "mobility"},
+  {"name": "other"}
+];
 function Blog() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,12 +69,14 @@ function Blog() {
     metadata: blog?.metadata || "",
     metatag: blog?.metatag || "",
     active: blog?.active ?? "1",
+    category: blog?.category ?? "equipment" ,
   };
 
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues,
     mode: "onChange",
+    shouldUnregister: false,
   });
 
   const {
@@ -68,8 +87,9 @@ function Blog() {
   } = form;
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const formData = new FormData();
+    console.log(data.description);
 
+    const formData = new FormData();
     if (data.id) {
       formData.append("blog_id", data.id);
     }
@@ -79,8 +99,9 @@ function Blog() {
     formData.append("active", data.active);
     formData.append("metadata", data.metadata);
     formData.append("metatag", data.metatag);
+    formData.append("category", data.category);
     if (data.image) formData.append("image", data.image[0]);
-
+    console.log('data', data)
     try {
       if (!blog) {
         await addBlog(formData);
@@ -121,18 +142,28 @@ function Blog() {
             )}
           />
 
-          <FormField
-            control={control}
+          <Controller
             name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Blog Description</FormLabel>
-                <FormControl>
-                  <TextEditor {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            control={control}
+            defaultValue=""
+            render={({ field, fieldState }) => {
+              console.log('field', field)
+              return (
+
+                <FormItem>
+                  <FormLabel>Blog Description</FormLabel>
+                  <FormControl>
+                    <TextEditor
+                      value={field.value}
+                      onChange={(html) => field.onChange(html)}
+                    />
+                  </FormControl>
+                  {fieldState.error && (
+                    <FormMessage>{fieldState.error.message}</FormMessage>
+                  )}
+                </FormItem>
+              )
+            }}
           />
 
           <FormField
@@ -156,7 +187,38 @@ function Blog() {
               </FormItem>
             )}
           />
-
+          <FormField
+            control={control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select Category</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(value)}
+                  value={field.value}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Categoies</SelectLabel>
+                      {category?.map((data) => (
+                        <SelectItem
+                          key={data.name}
+                          value={data.name || ""}
+                          className="capitalize"
+                        >
+                          {data.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={control}
             name="metadata"

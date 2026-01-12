@@ -23,8 +23,8 @@ const schema = z.object({
   sub_category: z.string().optional(),
   vendor_id: z.string().optional(),
   product_name: z.string().min(3, "Minimum 3 characters required"),
-  price_day: z.coerce.number().min(1, "Price per day must be at least 1"),
-  price_hour: z.coerce.number().min(1, "Price per hour must be at least 1"),
+  price_day: z.string().min(1, "Enter price for per day"),
+  price_hour: z.string().min(1, "Enter price for per hour"),
   description: z.string().min(3, "Minimum 3 characters required"),
   location: z.string().min(1, "Location is required"),
   product_image: z
@@ -49,7 +49,7 @@ function Product() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate } = useGetProduct();
   const user = getVendorInfo();
-  const { subcategory } = useGetSubCategoryWithSlug(user?.data?.category || 'equipment');
+  const { subcategory } = useGetSubCategoryWithSlug(user?.data?.category || 'equipment',1);
   const product: Product | undefined = location.state?.product;
   
   const defaultValues: FormData = {
@@ -58,8 +58,8 @@ function Product() {
     category: product?.category || user?.data?.category,
     sub_category: product?.sub_category || "",
     product_name: product?.product_name || "",
-    price_day: Number(product?.price_day ?? 1),
-    price_hour: Number(product?.price_hour ?? 1),
+    price_day: product?.price_day || "",
+    price_hour: product?.price_hour || "",
     description: product?.description || "",
     product_image: undefined,
     location: product?.location || user?.data?.location || '',
@@ -92,8 +92,8 @@ console.log(errors)
     formData.append("sub_category", data.sub_category ?? "");
 
     formData.append("product_name", data.product_name);
-    formData.append("price_hour", data.price_hour.toString());
-    formData.append("price_day", data.price_day.toString());
+    formData.append("price_hour", data.price_hour);
+    formData.append("price_day", data.price_day);
     formData.append("description", data.description);
     formData.append("metadata", data.metadata);
     formData.append("metatag", data.metatag);
@@ -196,15 +196,15 @@ console.log(errors)
                   <Input
                     type="number"
                     {...field}
-                    value={
-                      typeof field.value === "number" || typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      field.onChange(val === "" ? undefined : Number(val));
-                    }}
+                    // value={
+                    //   typeof field.value === "number" || typeof field.value === "string"
+                    //     ? field.value
+                    //     : ""
+                    // }
+                    // onChange={(e) => {
+                    //   const val = e.target.value;
+                    //   field.onChange(val === "" ? undefined : Number(val));
+                    // }}
                     placeholder="Enter product price per day"
                   />
 
@@ -226,15 +226,15 @@ console.log(errors)
                   <Input
                     type="number"
                     {...field}
-                    value={
-                      typeof field.value === "number" || typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      field.onChange(val === "" ? undefined : Number(val));
-                    }}
+                    // value={
+                    //   typeof field.value === "number" || typeof field.value === "string"
+                    //     ? field.value
+                    //     : ""
+                    // }
+                    // onChange={(e) => {
+                    //   const val = e.target.value;
+                    //   field.onChange(val === "" ? undefined : Number(val));
+                    // }}
                     placeholder="Enter product price per hour"
                   />
 

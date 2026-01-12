@@ -9,6 +9,7 @@ import NotFound from "./components/not-found";
 import Layout from "./Layout";
 import VendorPrivateRoute from "./components/vendor-private-route";
 import { HelmetProvider } from "react-helmet-async";
+import CancelledBookingList from "./admin/sidebar/booking/cancelled-bookinglist";
 
 const Home = lazy(() => import("./pages/home"));
 const CategoryPage = lazy(() => import('./pages/category'));
@@ -33,8 +34,8 @@ const CustomerRegister = lazy(() => import("./pages/customer-register"));
 const CustomerLayout = lazy(() => import("./customer-panel/layout"));
 const CustomerHomePage = lazy(() => import("./customer-panel/index"));
 const RequestQuoteForm = lazy(() => import("./pages/request-quote"));
-const ActiveBookingList = lazy(() => import("./admin/sidebar/booking/approval-bookinglist"));
-const PendingBookingList = lazy(() => import("./admin/sidebar/booking/bookinglist"));
+const ActiveBookingList = lazy(() => import("./admin/sidebar/booking/confirm-bookinglist"));
+const PendingBookingList = lazy(() => import("./admin/sidebar/booking/pendding-bookinglist"));
 const Blog = lazy(() => import("./admin/sidebar/blog/blog"));
 const BlogList = lazy(() => import("./admin/sidebar/blog/blog-list"));
 const Booking = lazy(() => import("./customer-panel/bookings-list"));
@@ -94,8 +95,9 @@ function App() {
               <Route path="subcategory-list" element={<SubCategoryList />} />
               <Route path="active-vendor" element={<ActiveVendorList />} />
               <Route path="vendor-list" element={<VendorList />} />
-              <Route path="active-booking" element={<ActiveBookingList />} />
+              <Route path="confirm-booking" element={<ActiveBookingList />} />
               <Route path="pending-booking-list" element={<PendingBookingList />} />
+              <Route path="cancelled-booking-list" element={<CancelledBookingList />} />
               <Route path="blog" element={<Blog />} />
               <Route path="blog-list" element={<BlogList />} />
             </Route>

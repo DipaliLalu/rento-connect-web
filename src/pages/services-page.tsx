@@ -1,18 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { useGetCategory } from "../actions/category";
 import { Helmet } from "react-helmet-async";
+import { category } from "../components/sections/services";
 
 
 function ServicesPage() {
-      const { category = [] } = useGetCategory();
-  const navigate=useNavigate();
-  const handleClick = (slug:any) => {
-    navigate(`/category?type=${slug}`)
-  }
-  const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
+    
+    const navigate = useNavigate();
+    const handleClick = (slug: any) => {
+        navigate(`/category?type=${slug}`)
+    }
+    const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
     return (
         <>
-         <Helmet>
+            <Helmet>
                 <title>Services | Rento Connect</title>
                 <meta name="description" content="Rento Connect Equipment Experts Mobility"></meta>
                 <meta name="keywords" content="Rento Connect"></meta>
@@ -34,11 +34,11 @@ function ServicesPage() {
                 <meta name="twitter:description" content="Rento Connect Equipment Experts Mobility" />
                 <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
             </Helmet>
-            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-24">
+            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-46">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    className="absolute inset-0 bg-cover bg-center opacity-20"
                     style={{
-                        backgroundImage: "url('https://placehold.co/1920x1080.png')",
+                        backgroundImage: "url('/Rento_Website/1_Home_Page/Main_Banner Our Core Services.png')",
                     }}
                     data-ai-hint="industrial machinery"
                 ></div>
@@ -58,16 +58,25 @@ function ServicesPage() {
                     {category.map((data) => (
                         <div
                             key={data.category_id}
-                            className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition hover:-translate-y-2 cursor-pointer"
+                            className="group bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition hover:-translate-y-2 cursor-pointer hover:border-2 hover:border-blue-900 duration-500"
                             onClick={() => handleClick(data?.slug)}
                         >
                             {/* Icon / Image */}
-                            <div className="w-20 h-20 flex items-center justify-center bg-orange-100 rounded-full mb-4">
-                                <img
-                                    src={`${import.meta.env.VITE_URL}/${data.category_image}`}
-                                    alt={data.category_name}
-                                    className="w-10 h-10 object-contain"
-                                />
+                            <div className="w-20 h-20 flex items-center justify-center bg-orange-100 rounded-full mb-4 border-2 border-blue-900 group-hover:border-orange-600">
+                                <div className="group">
+                                    <img
+                                        src={data.category_image}
+                                        alt={data.category_name}
+                                        className="w-20 h-20 object-contain group-hover:hidden duration-500 "
+                                    />
+
+                                    <img
+                                        src={data.category_hover_image}
+                                        alt={data.category_name}
+                                        className="w-20 h-20 object-contain hidden group-hover:block duration-500"
+                                    />
+                                </div>
+
                             </div>
 
                             {/* Title */}

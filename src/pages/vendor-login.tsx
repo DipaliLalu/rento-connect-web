@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '../components/ui/alert';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
-
+type AlertType = "success" | "error";
 
 const formSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -19,7 +19,10 @@ const formSchema = z.object({
 
 });
 function VendorLogin() {
-    const [message, setMessage] = useState<string | null>(null);
+    const [alert, setAlert] = useState<{
+        message: string;
+        type: AlertType;
+    } | null>(null);
     const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -43,11 +46,18 @@ function VendorLogin() {
                     formData.append(key, data[key as keyof typeof data]);
                 }
             }
-            await loginVendor(formData, navigate);
+            const res = await loginVendor(formData, navigate);
+            setAlert({
+                message: res.message,
+                type: "success",
+            });
             reset();
         } catch (err: any) {
             console.error("Failed to login:", err);
-            setMessage(err?.message);
+            setAlert({
+                message: err?.message || "Login failed",
+                type: "error",
+            });
         }
     };
     const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
@@ -99,23 +109,24 @@ function VendorLogin() {
                         />
                     </Link>
                     <h1 className="text-2xl text-blue-950 font-bold">Login</h1>
-                    {message == null && <p className="text-muted-foreground">Enter your details to login to your account</p>}
-                    {message ? (
-                        <Alert variant="destructive" className="shadow-md">
+                    {alert?.message == null && <p className="text-muted-foreground">Enter your details to login to your account</p>}
+                    {alert?.message ? (
+                        <Alert variant={alert.type === "error" ? "destructive" : "default"} className="shadow-md">
                             {/* Close Button */}
                             <button
                                 type="button"
-                                onClick={() => {setMessage(null)
+                                onClick={() => {
+                                    setAlert(null)
                                     reset();
                                 }}
                                 className="absolute md:-top-28 -top-24 rounded-full right-1 text-xl"
                                 aria-label="Close"
                             >
-                             <IoIosCloseCircleOutline className='cursor-pointer text-slate-800' size={28}/>
+                                <IoIosCloseCircleOutline className='cursor-pointer text-slate-800' size={28} />
                             </button>
 
-                            <AlertDescription className="capitalize font-semibold text-lg">
-                                {message}
+                            <AlertDescription className={`capitalize font-semibold text-lg ${alert.type === "error" ? "text-red-700" : "text-green-700"}`}>
+                                {alert?.message}
                             </AlertDescription>
                         </Alert>
                     )

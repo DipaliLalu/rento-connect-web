@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import axiosInstance, { endpoints, fetcher } from "../utils/axios";
 import { useMemo } from "react";
 import useSWR from "swr";
-import type { Vendor } from "../types/vendor";
+import type { Vendor, VendorRemark } from "../types/vendor";
 import { removeVendorToken, setVendorSession } from "../utils/vendor-utils";
 import { type NavigateFunction } from "react-router-dom";
 
@@ -28,7 +28,7 @@ export async function registerVendor(data: FormData) {
       },
     });
     if (res?.data?.response === true) {
-      toast.success(res.data.message);
+      // toast.success(res.data.message);
       return res.data;
     } else {
       throw new Error(res?.data?.message || "Operation failed");
@@ -68,7 +68,7 @@ export function useGetVendorList(searchFor?: string) {
 
 // list of active vendor list
 export function useGetActiveVendorList(category?: string) {
-   const url = category
+  const url = category
     ? `${endpoints.vendor.vendotActiveList}?category=${category}`
     : endpoints.vendor.vendotActiveList;
 
@@ -90,13 +90,15 @@ export function useGetActiveVendorList(category?: string) {
   return memoizedValue;
 }
 
-export async function activeVendor(id: number) {
+export async function activeVendor(id: number, remark: string) {
   try {
     const res = await axiosInstance({
       method: "POST",
       url: endpoints.vendor.activeVendor(id),
+      data: {
+        remark: remark,
+      },
       headers: {
-        "Content-Type": "multipart/form-data",
         "X-API-KEY": "rentosupersecretkey102"
       },
     });
@@ -114,8 +116,34 @@ export async function activeVendor(id: number) {
   }
 }
 
+export async function inActiveVendor(id: number, remark: string) {
+  try {
+    const res = await axiosInstance({
+      method: "POST",
+      url: endpoints.vendor.inActiveVendor(id),
+      data: {
+        remark: remark,
+      },
+      headers: {
+        "X-API-KEY": "rentosupersecretkey102"
+      },
+    });
+
+    if (res?.data?.response === true) {
+      toast.success(res.data.message || "Vendor inactive successfully");
+    } else {
+      throw new Error(res?.data?.message || "Vendor inactive vendor operation failed");
+    }
+  } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.message || error.message || "Unknown error";
+    toast.error(`Failed to inactivate vendor: ${errorMessage}`);
+    throw error;
+  }
+}
+
 //vendor login
-export async function loginVendor(data: FormData,navigate:NavigateFunction) {
+export async function loginVendor(data: FormData, navigate: NavigateFunction) {
   const url = endpoints.vendor.login;
   try {
     const res = await axiosInstance({
@@ -159,7 +187,7 @@ export async function logoutVendor(
   try {
     const res = await axiosInstance.put(
       url, // URL
-      {}, 
+      {},
       {
         headers: {
           "Content-Type": "application/json",
@@ -179,3 +207,28 @@ export async function logoutVendor(
     toast.error(`Logout failed: ${error?.response?.data?.message || error.message}`);
   }
 }
+
+export function useGetVendorRemark(id: number | null) {
+  const url = id ? endpoints.vendor.vendorRemark(id) : null;
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR<{
+    response: boolean;
+    data: VendorRemark[];
+  }>(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(() => {
+    const remarks = data?.data ?? [];
+
+    return {
+      vendorRemark: remarks,
+      isLoading,
+      vendorRemarkError: error,
+      vendorRemarkValidating: isValidating,
+      vendorRemarkEmpty: !isLoading && remarks.length === 0,
+      mutate,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}
+

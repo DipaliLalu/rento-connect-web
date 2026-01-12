@@ -60,7 +60,8 @@ const schema = z.object({
     .optional(),
   metadata: z.string().min(2, "Enter metadata"),
   metatag: z.string().min(2, "Enter metatag"),
-  price: z.string().min(1, "Enter price"),
+  price_perhour: z.string().min(1, "Enter price for per hour"),
+  price_perday: z.string().min(1, "Enter price for per day"),
   display_name: z.string().min(2, "Enter your diaplay name"),
   type: z.string().optional(),
   active: z.string().default("1"),
@@ -87,7 +88,8 @@ function SubCategoryForm() {
     description: subcategory?.description || "",
     metadata: subcategory?.metadata || "",
     metatag: subcategory?.metatag || "",
-    price: subcategory?.price || "",
+    price_perday: subcategory?.price_perday || "",
+    price_perhour: subcategory?.price_perhour || "",
     display_name: subcategory?.display_name || "",
     subcategory_image: undefined,
     active: subcategory?.active?.toString() ?? "1",
@@ -121,7 +123,8 @@ function SubCategoryForm() {
 
     formData.append("category_slug", data.category_slug);
     formData.append("subcategory_name", data.subcategory_name);
-    formData.append("price", data.price);
+    formData.append("price_perday", data.price_perday);
+    formData.append("price_perhour", data.price_perhour);
     formData.append("display_name", data.display_name);
     formData.append("heading", data.heading);
     formData.append("description", data.description);
@@ -255,12 +258,25 @@ function SubCategoryForm() {
           />
           <FormField
             control={control}
-            name="price"
+            name="price_perday"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Subservice Price</FormLabel>
+                <FormLabel>Subservice Price Per Day</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter subservice price" type="number" />
+                  <Input {...field} placeholder="Enter subservice price per day" type="number" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="price_perhour"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Subservice Price Per Hour</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter subservice price per hour" type="number" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

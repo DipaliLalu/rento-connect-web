@@ -25,7 +25,7 @@ export async function registerCustomer(data: FormData) {
             },
         });
         if (res?.data?.response === true) {
-            toast.success(res.data.message);
+            // toast.success(res.data.message);
             return res.data;
         } else {
             throw new Error(res?.data?.message || "Operation failed");

@@ -1,5 +1,3 @@
-import { LuCalendarCheck, LuHandshake, LuUserPlus } from "react-icons/lu";
-
 function StepsSection() {
     return (
         <section className="flex flex-col gap-5 text-center mt-20 mb-6  px-10 py-20 bg-blue-900 text-primary-foreground">
@@ -18,8 +16,17 @@ function StepsSection() {
                 {/* Step 1 */}
                 <div className="relative flex flex-col items-center p-4">
                     <div className="flex items-center justify-center bg-background rounded-full p-4 mb-4 border-4 border-secondary z-10">
-                        <div className="flex items-center justify-center h-16 w-16 bg-orange-100 rounded-full">
-                            <LuUserPlus size={40} className="text-primary" />
+                        <div className="flex items-center justify-center h-16 w-16 bg-orange-100 rounded-full group overflow-hidden hover:border-2 hover:border-orange-600">
+                            <img
+                                src="/Rento_Website/1_Home_Page/Get Started in 3 Simple Steps/Register-&-Browse1.png"
+                                alt={'Register Icon'}
+                                className="w-20 h-16 object-contain group-hover:hidden duration-500 border-2 border-blue-900 rounded-full"
+                            />
+                            <img
+                                src="/Rento_Website/1_Home_Page/Get Started in 3 Simple Steps/Register-&-Browse2.png"
+                                alt={'Register Icon'}
+                                className="w-20 h-16 object-contain hidden group-hover:block duration-500 rounded-full transform transition-transform ease-in-out scale-110"
+                            />
                         </div>
                     </div>
                     <h3 className="font-headline text-xl font-semibold mb-2 ">Register &amp; Browse</h3>
@@ -31,8 +38,17 @@ function StepsSection() {
                 {/* Step 2 */}
                 <div className="relative flex flex-col items-center p-4">
                     <div className="flex items-center justify-center bg-background rounded-full p-4 mb-4 border-4 border-secondary z-10">
-                        <div className="flex items-center justify-center h-16 w-16 bg-orange-100 rounded-full">
-                            <LuCalendarCheck size={40} className="text-primary" />
+                        <div className="flex items-center justify-center h-16 w-16 bg-orange-100 rounded-full group overflow-hidden hover:border-2 hover:border-orange-600">
+                            <img
+                                src="/Rento_Website/1_Home_Page/Get Started in 3 Simple Steps/Book-a-Service1.png"
+                                alt={'Register Icon'}
+                                className="w-20 h-16 object-contain group-hover:hidden duration-500 border-2 border-blue-900 rounded-full"
+                            />
+                            <img
+                                src="/Rento_Website/1_Home_Page/Get Started in 3 Simple Steps/Book-a-Service2.png"
+                                alt={'Register Icon'}
+                                 className="w-20 h-16 object-contain hidden group-hover:block duration-500 rounded-full transform transition-transform ease-in-out scale-110"
+                            />
                         </div>
                     </div>
                     <h3 className="font-headline text-xl font-semibold mb-2 ">Book a Service</h3>
@@ -44,8 +60,17 @@ function StepsSection() {
                 {/* Step 3 */}
                 <div className="relative flex flex-col items-center p-4">
                     <div className="flex items-center justify-center bg-background rounded-full p-4 mb-4 border-4 border-secondary z-10">
-                        <div className="flex items-center justify-center h-16 w-16 bg-orange-100 rounded-full">
-                            <LuHandshake size={40} className="text-primary" />
+                        <div className="flex items-center justify-center h-16 w-16 bg-orange-100 rounded-full group overflow-hidden hover:border-2 hover:border-orange-600">
+                          <img
+                                src="/Rento_Website/1_Home_Page/Get Started in 3 Simple Steps/Connect-&-Operate1.png"
+                                alt={'Register Icon'}
+                                className="w-20 h-16 object-contain group-hover:hidden duration-500 border-2 border-blue-900 rounded-full"
+                            />
+                            <img
+                                src="/Rento_Website/1_Home_Page/Get Started in 3 Simple Steps/Connect-&-Operate2.png"
+                                alt={'Register Icon'}
+                                 className="w-20 h-16 object-contain hidden group-hover:block duration-500 rounded-full transform transition-transform ease-in-out scale-110"
+                            />
                         </div>
                     </div>
 

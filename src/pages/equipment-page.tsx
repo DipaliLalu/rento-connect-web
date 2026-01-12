@@ -1,25 +1,28 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useGetSubCategoryWithSlug } from "../actions/subcategory";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import WhyHireSection from "../components/sections/why-hire-section";
 import { getVendorInfo } from "../utils/vendor-utils";
 import { Skeleton } from "../components/ui/skeleton";
-import { Search } from "lucide-react";
 import { useGetProductWithSlug } from "../actions/product";
 import { Helmet } from "react-helmet-async";
+import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 
 function EquipmentCategoryPage() {
     const categoryKey = "equipment";
     const navigate = useNavigate();
-    const { subcategory, isLoading } = useGetSubCategoryWithSlug(categoryKey);
+    const h1Ref = useRef<HTMLHtmlElement>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const { subcategory, isLoading, pager } = useGetSubCategoryWithSlug(categoryKey, currentPage);
+    const totalPages = pager?.last_page ?? 1;
     const user = getVendorInfo();
 
     const { products } = useGetProductWithSlug(categoryKey);
-
     const [equipmentSearch, setEquipmentSearch] = useState("");
     const [locationSearch, setLocationSearch] = useState("");
+    const isSearching = equipmentSearch || locationSearch;
 
     /** ---------------------------------------------------------
      *  STEP 1 → Filter products by location + group by subcategory
@@ -85,6 +88,15 @@ function EquipmentCategoryPage() {
             navigate("/login");
         }
     };
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= (pager?.last_page ?? 1)) {
+            setCurrentPage(page);
+            // Scroll to h1
+            if (h1Ref.current) {
+                h1Ref.current.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    };
     const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
     return (
         <>
@@ -111,13 +123,24 @@ function EquipmentCategoryPage() {
                 <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
             </Helmet>
             {/* Hero Section */}
-            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
-                <div
-                    className="absolute inset-0 bg-cover bg-center opacity-10"
-                    style={{
-                        backgroundImage: "url('https://placehold.co/1920x1080.png')",
-                    }}
-                ></div>
+            <section className="relative bg-blue-900 text-primary-foreground py-20 md:h-96">
+                {/* 🔹 Background Video */}
+                <video
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                >
+                    <source
+                        src="/Rento_Website/2_Equipment/Why Rent Equipment from Rento Connect.mp4"
+                        type="video/mp4"
+                    />
+                </video>
+
+                {/* 🔹 Overlay (same opacity like earlier bg image) */}
+                <div className="absolute inset-0 bg-black/20"></div>
+
 
                 <div className="relative flex flex-col gap-8 justify-center items-center text-center px-5">
                     <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight">
@@ -131,11 +154,20 @@ function EquipmentCategoryPage() {
 
                 {/* Search Section */}
                 <div className="absolute bottom-[-5.5rem] sm:bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-full px-4 md:px-10">
-                    <div className="mx-auto w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+                    <div className="mx-auto w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-lg shadow-xl overflow-hidden  border-2 border-orange-500">
 
                         {/* Equipment Search */}
-                        <div className="flex items-center flex-1 border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2 sm:px-4 sm:py-3">
-                            <Search className="w-5 h-5 text-gray-500 mr-2" />
+                        <div className="flex items-center flex-1 border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2 sm:px-4 sm:py-3 group">
+                            <img
+                                src="/Rento_Website/Social Media/Serch1.png"
+                                alt={'Serch Icon'}
+                                className="w-7 h-7 object-contain group-hover:hidden duration-500 border-2 border-blue-900 rounded-full"
+                            />
+                            <img
+                                src="/Rento_Website/Social Media/Serch2.png"
+                                alt={'Serch Icon'}
+                                className="w-7 h-7 object-contain hidden group-hover:block duration-500 border-2 border-orange-600 rounded-full"
+                            />
                             <Input
                                 type="text"
                                 value={equipmentSearch}
@@ -146,20 +178,17 @@ function EquipmentCategoryPage() {
                         </div>
 
                         {/* Location Search */}
-                        <div className="flex items-center flex-1 border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2 sm:px-4 sm:py-3">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-5 h-5 text-gray-500 mr-2"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <circle cx="12" cy="10" r="3" />
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-                            </svg>
+                        <div className="flex items-center flex-1 border-b md:border-b-0 md:border-r border-gray-200 px-3 py-2 sm:px-4 sm:py-3 group">
+                            <img
+                                src="/Rento_Website/Social Media/Location1.png"
+                                alt={'Location Icon'}
+                                className="w-7 h-7 object-contain group-hover:hidden duration-500 border-2 border-blue-900 rounded-full"
+                            />
+                            <img
+                                src="/Rento_Website/Social Media/Location2.png"
+                                alt={'Location Icon'}
+                                className="w-7 h-7 object-contain hidden group-hover:block duration-500 border-2 border-orange-600 rounded-full"
+                            />
                             <Input
                                 type="text"
                                 value={locationSearch}
@@ -171,7 +200,7 @@ function EquipmentCategoryPage() {
 
                         {/* Search Button */}
                         <div className="flex justify-center items-center px-3 py-2 sm:px-4 sm:py-3">
-                            <Button className="w-full md:w-auto px-6 py-3 sm:px-10 sm:py-5 text-sm sm:text-base rounded-md">
+                            <Button className="w-full md:w-auto px-6 py-3 sm:px-10 sm:py-5 text-sm sm:text-base rounded-md" variant={"custom"}>
                                 Search
                             </Button>
                         </div>
@@ -180,7 +209,7 @@ function EquipmentCategoryPage() {
             </section>
 
             {/* Equipment Cards */}
-            <section className="relative py-28 md:py-36 px-5 md:px-10">
+            <section className="relative py-18 px-5 md:px-10" ref={h1Ref}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
                     {isLoading &&
@@ -201,7 +230,7 @@ function EquipmentCategoryPage() {
                             return (
                                 <div
                                     key={item.subcategory_id}
-                                    className="rounded-lg border bg-card text-card-foreground shadow-sm flex flex-col overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+                                    className="rounded-lg border-2 bg-card text-card-foreground shadow-sm flex flex-col overflow-hidden group transition hover:-translate-y-2 hover:border-2 hover:border-blue-900 duration-500 border-orange-500"
                                 >
                                     <div className="relative h-48 w-full">
                                         <img
@@ -224,16 +253,22 @@ function EquipmentCategoryPage() {
                                             </p>
                                             <p className="text-lg font-bold text-primary">
                                                 {matchedProduct
+                                                    ? `₹${matchedProduct.price_hour}/hour`
+                                                    : `₹${item.price_perhour}/hour`}
+                                            </p>
+                                            <p className="text-lg font-bold text-primary">
+                                                {matchedProduct
                                                     ? `₹${matchedProduct.price_day}/day`
-                                                    : `₹${item.price}/day`}
+                                                    : `₹${item.price_perday}/day`}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="px-5 mt-auto mb-4">
                                         <Button
-                                            className="w-full bg-blue-900"
+                                            className="w-full"
                                             onClick={() => handleRequestQuote(item?.subcategory_name)}
+                                            variant={"custom"}
                                         >
                                             Request Quote
                                         </Button>
@@ -249,7 +284,52 @@ function EquipmentCategoryPage() {
                         )
                     )}
                 </div>
+
+                {/* Pagination Controls */}
+                {!isSearching && totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-2 mt-18">
+
+                        {/* ⬅ PREVIOUS */}
+                        {currentPage !== 1 && <Button
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            variant="custom"
+                        >
+                            <FaAnglesLeft />
+                        </Button>}
+
+                        {/* PAGE NUMBERS */}
+                        {Array.from({ length: totalPages }, (_, i) => {
+                            const pageNumber = i + 1;
+                            const isActive = currentPage === pageNumber;
+
+                            return (
+                                <Button
+                                    key={pageNumber}
+                                    size="sm"
+                                    onClick={() => handlePageChange(pageNumber)}
+                                    variant={"custom"}
+                                    data-active={isActive ? "true" : "false"}
+                                >
+                                    {pageNumber}
+                                </Button>
+                            );
+                        })}
+
+                        {/* ➡ NEXT */}
+                        <Button
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            variant="custom"
+                        >
+                            <FaAnglesRight />
+                        </Button>
+                    </div>
+                )}
             </section>
+
 
             <WhyHireSection category={categoryKey} />
         </>

@@ -26,9 +26,11 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
-import { useGetActiveVendorList } from "../../../actions/vendor";
+import { inActiveVendor, useGetActiveVendorList, useGetVendorRemark } from "../../../actions/vendor";
 import type { Vendor } from "../../../types/vendor";
 import { getUserInfo } from "../../../utils/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import { getRemarkString } from "../../../utils/vendor-utils";
 
 
 export default function ActiveVendorlist() {
@@ -43,7 +45,7 @@ export default function ActiveVendorlist() {
     const categoryParam = Array.isArray(user?.data.roles)
         ? user?.data.roles.join(',').toLowerCase() // e.g. ["HR", "Admin"] → "HR,Admin"
         : user?.data.roles;
-    const { vendor, isLoading } = useGetActiveVendorList(categoryParam);
+    const { vendor, isLoading, mutate } = useGetActiveVendorList(categoryParam);
     // const navigate = useNavigate();
     const userRoles: string[] = (user?.data?.roles ?? []).map((r: string) =>
         String(r).toLowerCase()
@@ -67,7 +69,9 @@ export default function ActiveVendorlist() {
     }, [vendor, userRoles]);
 
     const [selectedCategory, setSelectedCategory] = React.useState("all");
-
+    React.useEffect(() => {
+        mutate();
+    }, []);
     // Filter vendor data by category
     const filteredData = React.useMemo(() => {
         if (selectedCategory === "all") return vendor || [];
@@ -94,6 +98,57 @@ export default function ActiveVendorlist() {
     //     await deleteCategory(id);
     //     await mutate(); // refetch SWR
     // }
+    const [loadingId, setLoadingId] = React.useState<number | null>(null);
+    const [activeMap, setActiveMap] = React.useState<Record<number, boolean>>({});
+
+    async function handleActiveVendor(id: number) {
+        setActiveMap(prev => ({
+            ...prev,
+            [id]: !(prev[id] ?? false),
+        }));
+
+        setLoadingId(id);
+
+        // 🔥 optimistic UI update
+        mutate(
+            (currentData) => {
+                if (!currentData) return currentData;
+
+                return {
+                    ...currentData,
+                    data: currentData.data.map((item: any) =>
+                        item.id === id
+                            ? { ...item, active: item.active === 1 ? 0 : 1 }
+                            : item
+                    ),
+                };
+            },
+            false // revalidate = false so UI changes instantly
+        );
+
+        try {
+            const action = "Inactive";
+            const remark = getRemarkString(
+                action,
+                user?.data?.username || "Unknown"
+            );
+            // 🔥 backend toggle (id only)
+            await inActiveVendor(id, remark);
+
+            // optional: re-fetch fresh data
+            mutate();
+        } catch (error) {
+            // ❌ rollback
+            setActiveMap(prev => ({
+                ...prev,
+                [id]: !(prev[id] ?? false),
+            }));
+            mutate();
+        } finally {
+            setLoadingId(null);
+        }
+    }
+
 
     const columns: ColumnDef<Vendor>[] = [
         {
@@ -147,17 +202,109 @@ export default function ActiveVendorlist() {
             cell: ({ row }) => {
                 const isActive = row.getValue("active") == 1;
                 return (
-                    <Button
-                        className={`px-3 py-1 text-white rounded cursor-not-allowed ${isActive
+                    <div
+                        className={`px-3 py-2 font-semibold text-white rounded w-fit ${isActive
                             ? "bg-green-500 hover:bg-green-600"
                             : "bg-red-500 hover:bg-red-600"
                             }`}
                     >
                         {isActive ? "Active" : "Inactive"}
-                    </Button>
+                    </div>
                 );
             },
         },
+        {
+            accessorKey: "activeSwitch",
+            header: () => <div className="text-center">Active / Inactive</div>,
+            cell: ({ row }) => {
+                const vendor = row.original;
+                const vendorId = Number(vendor?.id);
+
+                const isActive =
+                    activeMap[vendorId] !== undefined
+                        ? activeMap[vendorId] = false
+                        : Number(vendor.active) == 1;
+
+                return (
+                    <div className="flex justify-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                disabled={loadingId == Number(vendor.id)}
+                                checked={isActive}
+                                onChange={() => handleActiveVendor(Number(vendor.id))}
+                                className="sr-only peer"
+                            />
+                            <div
+                                className="
+                            w-11 h-6 bg-red-500 peer-focus:outline-none rounded-full
+                            peer peer-checked:bg-green-500
+                            after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                            after:bg-white after:rounded-full after:h-5 after:w-5
+                            after:transition-all
+                            peer-checked:after:translate-x-full
+                        "
+                            ></div>
+                        </label>
+                    </div>
+                );
+            },
+        },
+        {
+            id: "remark",
+            header: "Remark",
+            cell: ({ row }) => {
+                const vendorId = Number(row.original.id);
+
+                const {
+                    vendorRemark,
+                    isLoading,
+                    mutate,
+                } = useGetVendorRemark(vendorId);
+
+                return (
+                    <Popover
+                        onOpenChange={(open) => {
+                            if (open) {
+                                mutate(); // 🔥 refetch latest remarks
+                            }
+                        }}
+                    >
+                        <PopoverTrigger asChild>
+                            <Button size="sm" variant="outline">
+                                View Remarks
+                            </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-96 max-h-64 overflow-y-auto">
+                            <h4 className="font-semibold mb-2 text-sm">
+                                Vendor Remarks
+                            </h4>
+
+                            {isLoading ? (
+                                <div className="text-sm">Loading...</div>
+                            ) : Array.isArray(vendorRemark) && vendorRemark.length > 0 ? (
+                                <div className="space-y-2">
+                                    {vendorRemark.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className="p-2 border rounded text-sm bg-muted"
+                                        >
+                                            {item.remark}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-muted-foreground">
+                                    No remarks found
+                                </div>
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                );
+            },
+        }
+
         // {
         //     id: "actions",
         //     header: "Actions",

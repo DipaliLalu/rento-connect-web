@@ -66,6 +66,7 @@ export const endpoints = {
     add: "/subcategories",
     list: "/subcategories",
     listwithslug: (slug: any | null) => `/subcategoriesBySlug/${slug}`,
+    Mobilitylistwithslug: `/mobilityBySlug`,
     update: (id: number | null) => `/subcategories/${id}`,
     delete: (id: number | null) => `/subcategories/${id}`,
   },
@@ -85,6 +86,8 @@ export const endpoints = {
     vendotActiveList: `vendor/activelist`,
     vendorlist: "vendor/list",
     activeVendor: (id: number | null) => `/vendor/activate/${id}`,
+    inActiveVendor: (id: number | null) => `/vendor/inactivate/${id}`,
+    vendorRemark: (id: number | null) => `/vendorremark/${id}`
   },
   customer: {
     register: "/customer/register",
@@ -99,6 +102,9 @@ export const endpoints = {
     customerBooking: (id: number | null) => `bookinglist/${id}`,
     customerBookingHistory: (id: number | null) => `bookinghistory/${id}`,
     delete: (id: number | null) => `booking/${id}`,
+    bookingRemark: (id: number | null) => `/bookingremark/${id}`,
+    bookingRemarkCreate: `bookingremark`,
+    Cancelbookinglist: `booking-cancel-list`
   },
   product: {
     add: "/products",
@@ -110,8 +116,12 @@ export const endpoints = {
   blog: {
     add: "/blog",
     list: "/blog",
+    blogList: "/blog/list",
     update: (id: number | null) => `/blog/${id}`,
     delete: (id: number | null) => `/blog/${id}`,
+    nextPrevBlog: (id: number | null) => `/blog/next-prev/${id}`,
+    relateBlog: (category: string, id?: number) =>
+      id ? `/blog/related/${category}/${id}` : `/blog/related/${category}`,
   },
   contact: {
     sendmail: "/contact/send",

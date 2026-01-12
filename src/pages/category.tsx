@@ -11,7 +11,7 @@ function CategoryPage() {
     const [searchParams] = useSearchParams();
     const navigate=useNavigate();
     const categoryFromURL = searchParams.get("type");
-    const { subcategory } = useGetSubCategoryWithSlug(categoryFromURL);
+    const { subcategory } = useGetSubCategoryWithSlug(categoryFromURL,1);
     const { category ,isLoading} = useGetCategory();
     const filterCategory = category?.find((data) => data.slug == categoryFromURL);
     const validCategories = ["equipment", "experts", "mobility"] as const;

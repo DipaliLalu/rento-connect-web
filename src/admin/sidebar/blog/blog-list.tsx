@@ -41,7 +41,6 @@ export default function CategoryList() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const { blogs, isLoading, mutate } = useGetBlogs();
-  console.log(blogs)
   const navigate = useNavigate();
 
   // 🧹 Deletion logic (with revalidation)
@@ -110,14 +109,14 @@ export default function CategoryList() {
       cell: ({ row }) => {
         const isActive = row.getValue("active") == 1;
         return (
-          <Button
+          <div
             className={`px-3 py-1 text-white rounded ${isActive
               ? "bg-green-500 hover:bg-green-600"
               : "bg-red-500 hover:bg-red-600"
               }`}
           >
             {isActive ? "Active" : "Inactive"}
-          </Button>
+          </div>
         );
       },
     },

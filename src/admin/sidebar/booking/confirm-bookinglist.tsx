@@ -26,12 +26,15 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
-import { activeBooking, deleteBooking, useGetBookingList } from "../../../actions/booking";
+import { createBookingRemark, useGetActiveBookingList, useGetBookingRemark } from "../../../actions/booking";
 import type { Booking } from "../../../types/booking";
 import { getUserInfo } from "../../../utils/utils";
+import { getRemarkString } from "../../../utils/vendor-utils";
+import BookingDetailDialog from "./booking-detail-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
 
 
-export default function BookingList() {
+export default function ActiveBookinglist() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         [],
@@ -39,7 +42,7 @@ export default function BookingList() {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const { bookings, isLoading, mutate } = useGetBookingList();
+    const { bookings, isLoading } = useGetActiveBookingList();
     const user = getUserInfo();
     // const navigate = useNavigate();
 
@@ -47,7 +50,7 @@ export default function BookingList() {
     const userRoles: string[] = (user?.data?.roles ?? []).map((r: string) =>
         String(r).toLowerCase()
     );
-    // Extract unique categories from bookings
+
     const categories = React.useMemo(() => {
         const list = bookings?.map((b) => b.category ?? "") ?? [];
         const unique = Array.from(new Set(list));
@@ -66,6 +69,7 @@ export default function BookingList() {
     }, [bookings, userRoles]);
 
     const [selectedCategory, setSelectedCategory] = React.useState("all");
+
     const filteredBookings = React.useMemo(() => {
         if (selectedCategory === "all") return bookings || [];
         return (bookings || []).filter((b) => b.category === selectedCategory);
@@ -86,14 +90,32 @@ export default function BookingList() {
         didSetDefault.current = true; // prevent future overrides
     }, [categories, userRoles]);
 
-    // 🧹 Deletion logic (with revalidation)
-    async function handleDelete(id: number) {
-        await deleteBooking(id);
-        await mutate(); // refetch SWR
-    }
-    async function handleActiveVendor(id: number) {
-        await activeBooking(id);
-        await mutate();
+    // // 🧹 Deletion logic (with revalidation)
+    // async function handleDelete(id: number) {
+    //     await deleteBooking(id);
+    //     await mutate(); // refetch SWR
+    // }
+    const [viewBooking, setViewBooking] = React.useState(false);
+    const [bookingDetail, setBookingDetail] = React.useState<Booking | null>(null);
+
+    async function handleBookingView(booking: Booking) {
+        setBookingDetail(booking);
+        setViewBooking(true);
+
+        const action = "Viewed Booking Details";
+        const remark = getRemarkString(
+            action,
+            user?.data?.username || "Unknown"
+        );
+
+        try {
+            await createBookingRemark({
+                booking_id: booking.id as number,
+                remark,
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     const columns: ColumnDef<Booking>[] = [
@@ -125,8 +147,8 @@ export default function BookingList() {
         },
         {
             accessorKey: "subcategory",
-            header: "Sub Category",
-            cell: ({ row }) => <div>{row.getValue("subCategory")}</div>,
+            header: "Sub Services",
+            cell: ({ row }) => <div>{row.getValue("subcategory")}</div>,
         },
         {
             accessorKey: "location",
@@ -147,18 +169,16 @@ export default function BookingList() {
             accessorKey: "active",
             header: () => <div>Status</div>,
             cell: ({ row }) => {
-                const vendor = row.original;
                 const isActive = row.getValue("active") == 1;
                 return (
-                    <Button
-                        className={`px-3 py-1 text-white rounded ${isActive
-                            ? "bg-green-500 hover:bg-green-600"
-                            : "bg-red-500 hover:bg-red-600"
+                    <div
+                        className={`px-3 py-2 font-semibold text-white rounded  ${isActive
+                            ? "bg-green-500 "
+                            : "bg-gray-500 "
                             }`}
-                        onClick={() => handleActiveVendor(Number(vendor.id))}
                     >
-                        {isActive ? "Active" : "Inactive"}
-                    </Button>
+                        {isActive ? "Booked" : "Pendding"}
+                    </div>
                 );
             },
         },
@@ -166,19 +186,73 @@ export default function BookingList() {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const vendor = row.original;
+                const booking = row.original;
                 return (
                     <div className="flex gap-2">
                         <Button
-                            onClick={() => handleDelete(Number(vendor.id))}
-                            variant="destructive"
+                            onClick={() => handleBookingView(booking)}
+                            variant="outline"
                         >
-                            Delete
+                            view Details
                         </Button>
                     </div>
                 );
             },
         },
+        {
+            id: "remark",
+            header: "Remark",
+            cell: ({ row }) => {
+                const vendorId = Number(row.original.id);
+
+                const {
+                    vendorRemark,
+                    isLoading,
+                    mutate,
+                } = useGetBookingRemark(vendorId);
+
+                return (
+                    <Popover
+                        onOpenChange={(open) => {
+                            if (open) {
+                                mutate(); // 🔥 refetch latest remarks
+                            }
+                        }}
+                    >
+                        <PopoverTrigger asChild>
+                            <Button size="sm" variant="outline">
+                                View Remarks
+                            </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-96 max-h-64 overflow-y-auto">
+                            <h4 className="font-semibold mb-2 text-sm">
+                                Booking Remarks
+                            </h4>
+
+                            {isLoading ? (
+                                <div className="text-sm">Loading...</div>
+                            ) : Array.isArray(vendorRemark) && vendorRemark.length > 0 ? (
+                                <div className="space-y-2">
+                                    {vendorRemark.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className="p-2 border rounded text-sm bg-muted"
+                                        >
+                                            {item.remark}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-muted-foreground">
+                                    No remarks found
+                                </div>
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                );
+            },
+        }
     ];
 
     const table = useReactTable({
@@ -209,6 +283,12 @@ export default function BookingList() {
 
     return (
         <div className="w-full p-4">
+            <BookingDetailDialog
+                open={viewBooking}
+                onClose={() => setViewBooking(false)}
+                booking={bookingDetail}
+            />
+
             {/* Filter + Columns */}
             <div className="flex items-center py-4 gap-4">
 
@@ -249,7 +329,6 @@ export default function BookingList() {
                         </SelectContent>
                     </Select>
 
-
                     {/* Columns Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -276,6 +355,7 @@ export default function BookingList() {
 
                 </div>
             </div>
+
 
             {/* Table */}
             <div className="w-full overflow-x-auto! rounded-md border">

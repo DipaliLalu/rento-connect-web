@@ -1,5 +1,7 @@
 import { Briefcase, Mail, MapPin } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { Button } from "../components/ui/button";
+import { Link } from "react-router-dom";
 
 const jobs = [
     {
@@ -36,7 +38,7 @@ function CareerPage() {
     const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
     return (
         <>
-         <Helmet>
+            <Helmet>
                 <title>Careers | Rento Connect</title>
                 <meta name="description" content="Rento Connect Equipment Experts Mobility"></meta>
                 <meta name="keywords" content="Rento Connect"></meta>
@@ -58,11 +60,11 @@ function CareerPage() {
                 <meta name="twitter:description" content="Rento Connect Equipment Experts Mobility" />
                 <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
             </Helmet>
-            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
+            <section className="relative bg-blue-900 text-primary-foreground py-20 md:h-92">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    className="absolute inset-0 bg-cover bg-center opacity-70"
                     style={{
-                        backgroundImage: "url('https://placehold.co/1920x1080.png')",
+                        backgroundImage: "url('/1250_368/Careers-Join-Our-Team.png')",
                     }}
                     data-ai-hint="industrial machinery"
                 ></div>
@@ -72,13 +74,13 @@ function CareerPage() {
                         Join Our Team
                     </h1>
 
-                    <p className="max-w-3xl mx-auto text-lg md:text-xl text-primary-foreground/80">
+                    <p className="max-w-3xl mx-auto text-lg md:text-xl font-bold">
                         Be a part of a dynamic team that is revolutionizing the B2B industrial services landscape. We are looking for passionate individuals to grow with us.
                     </p>
                 </div>
             </section>
 
-            <section className="flex flex-col gap-5 text-center py-20">
+            <section className="flex flex-col gap-5 text-center py-15">
                 <h2 className="font-headline text-3xl md:text-4xl font-bold text-blue-950">Current Openings</h2>
                 <p className="max-w-2xl mx-auto text-muted-foreground px-5">
                     Explore the opportunities to build your career with Rento Connect.
@@ -88,7 +90,7 @@ function CareerPage() {
                     {jobs.map((job, i) => (
                         <div
                             key={i}
-                            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all text-start max-w-5xl"
+                            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all text-start max-w-5xl hover:-translate-y-2 cursor-pointer hover:border-2 hover:border-blue-900 duration-500 border-orange-600 border-2"
                         >
                             <h2 className="text-xl font-semibold text-gray-900 mb-2">
                                 {job.title}
@@ -104,9 +106,9 @@ function CareerPage() {
                                 </span>
                             </div>
                             <p className="text-gray-600 mb-4">{job.description}</p>
-                            <button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-md font-medium transition">
+                            <Button variant={"custom"}>
                                 Apply Now
-                            </button>
+                            </Button>
                         </div>
                     ))}
                 </div>
@@ -122,14 +124,15 @@ function CareerPage() {
                     </p>
 
                     <div className="mt-8">
-                            <a
-                                href="mailto:careers@rentoconnect.com"
-                                className="inline-flex items-center gap-2 bg-indigo-900 hover:bg-indigo-800 text-white font-medium px-6 py-3 rounded-md transition"
+                        <Button variant={"custom"}>
+                            <Link
+                                to="mailto:careers@rentoconnect.com"
+                                className="inline-flex items-center gap-2 font-medium px-6 py-3 rounded-md"
                             >
                                 <Mail size={18} />
                                 Email your resume to: <span className="font-semibold">careers@rentoconnect.com</span>
-                            </a>
-
+                            </Link>
+                        </Button>
                     </div>
                 </div>
             </section>

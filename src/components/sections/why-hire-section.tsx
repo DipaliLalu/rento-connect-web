@@ -1,4 +1,3 @@
-import { SiTicktick } from "react-icons/si";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 
@@ -8,7 +7,8 @@ interface CategoryData {
   title: string;
   points: { title: string; desc: string }[];
   buttonText: string;
-  url:string;
+  url: string;
+  imageUrl: string;
 }
 
 const categoryData: Record<CategoryKey, CategoryData> = {
@@ -21,7 +21,8 @@ const categoryData: Record<CategoryKey, CategoryData> = {
       { title: "Pan-India Delivery", desc: "We facilitate equipment mobilization to your project site, wherever it is in India." },
     ],
     buttonText: "Post Your Requirement",
-    url:'services',
+    url: 'services',
+    imageUrl: 'Rento_Website/2_Equipment/Why-Rent-Equipment-from-Rento-Connects.png',
   },
   experts: {
     title: "Why Hire Experts from Rento Connect?",
@@ -29,9 +30,11 @@ const categoryData: Record<CategoryKey, CategoryData> = {
       { title: "Verified Professionals", desc: "Every expert on our platform is thoroughly vetted for their skills, experience, and certifications." },
       { title: "Flexible Engagement", desc: "Hire experts for short-term projects, long-term contracts, or on-demand consultations." },
       { title: "Nationwide Coverage", desc: "Access a vast network of specialists across India, ready to be deployed to your site." },
+      { title: "End-to-End Support", desc: "We handle everything—from expert selection to deployment—ensuring smooth execution and reliability." },
     ],
     buttonText: "Post Your Requirement",
-    url:'services',
+    url: 'services',
+    imageUrl: 'Rento_Website/2_Equipment/Why-Hire-Experts-from-Rento-Connect.png',
   },
   mobility: {
     title: "Your Partner in Workforce Mobility",
@@ -42,7 +45,8 @@ const categoryData: Record<CategoryKey, CategoryData> = {
       { title: "Scalable Fleet", desc: "From a single sedan to a fleet of buses, we scale our services to meet your operational demands." },
     ],
     buttonText: "Book Now",
-    url:'contact',
+    url: 'contact',
+    imageUrl: 'Rento_Website/2_Equipment/Your-Partner-in-Workforce-Mobility.png'
   },
 };
 
@@ -58,13 +62,14 @@ export default function WhyHireSection({ category }: WhyHireSectionProps) {
       <div className="">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Image */}
-          <div className="relative h-80 w-full rounded-lg overflow-hidden shadow-xl">
+          <div className="h-full w-full rounded-2xl">
             <img
               alt={data.title}
-              src="https://placehold.co/600x400.png"
+              src={data.imageUrl}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-2xl shadow-lg"
             />
+
           </div>
 
           {/* Content */}
@@ -73,8 +78,18 @@ export default function WhyHireSection({ category }: WhyHireSectionProps) {
 
             <ul className="mt-6 space-y-4 text-muted-foreground">
               {data.points.map((point, index) => (
-                <li key={index} className="flex items-start">
-                  <SiTicktick className="h-6 w-6 text-primary mr-3 mt-1 flex-shrink-0" />
+                <li key={index} className="flex items-start group gap-2">
+                  <img
+                    src={'Rento_Website/2_Equipment/Right1.png'}
+                    alt={'Tick Icon'}
+                    className="w-8 h-8 object-contain group-hover:hidden duration-500 "
+                  />
+
+                  <img
+                    src={'Rento_Website/2_Equipment/Right2.png'}
+                    alt={'Tick Icon'}
+                    className="w-8 h-8 object-contain hidden group-hover:block duration-500"
+                  />
                   <span>
                     <span className="font-semibold text-foreground">{point.title}:</span>{" "}
                     {point.desc}
@@ -83,7 +98,7 @@ export default function WhyHireSection({ category }: WhyHireSectionProps) {
               ))}
             </ul>
 
-            <Button className="mt-5 bg-blue-900">
+            <Button className="mt-5" variant={"custom"}>
               <Link to="/contact">{data.buttonText}</Link>
             </Button>
           </div>

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import useSWR from "swr";
 import { useMemo } from "react";
 import axiosInstance, { endpoints, fetcher } from "../utils/axios";
-import type { MobilitySubCategory, SubCategory } from "../types/subcategory";
+import type { MobilitySubCategory, SubCategory, SubCategoryResponse } from "../types/subcategory";
 
 
 // SWR Options for data fetching
@@ -143,19 +143,38 @@ export async function deleteSubCategory(id: number) {
 }
 
 //get category with slug
-export function useGetSubCategoryWithSlug(slug: string | null) {
+export function useGetSubCategoryWithSlug(slug: string | null, page: number) {
   const url = slug
-    ? endpoints.subcategory.listwithslug(slug)
+    ? `${endpoints.subcategory.listwithslug(slug)}?page=${page}`
     : endpoints.subcategory.list;
 
-  const { data, isLoading, error, isValidating, mutate } = useSWR<{
-    data: SubCategory[];
-  }>(url, fetcher);
-
+  const { data, isLoading, error, isValidating, mutate } = useSWR<SubCategoryResponse>(url, fetcher);
   const memoizedValue = useMemo(() => {
     return {
       subcategory: data?.data,
       isLoading,
+       pager: data?.pager,
+      subcategoryError: error,
+      subcategoryValidating: isValidating,
+      subcategoryEmpty: !isLoading && !data?.data?.length,
+      mutate,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}
+
+export function useGetMobilityWithSlug(category: string | null, page: number,type: string | null,) {
+  const url = category
+    ? `${endpoints.subcategory.Mobilitylistwithslug}?category=${category}&type=${type}&page=${page}`
+    : endpoints.subcategory.list;
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR<SubCategoryResponse>(url, fetcher);
+  const memoizedValue = useMemo(() => {
+    return {
+      subcategory: data?.data,
+      isLoading,
+       pager: data?.pager,
       subcategoryError: error,
       subcategoryValidating: isValidating,
       subcategoryEmpty: !isLoading && !data?.data?.length,

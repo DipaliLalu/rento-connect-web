@@ -80,14 +80,19 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Approval Booking List",
-          url: "/dashboard/active-booking",
+          title: "Confirmed Booking List",
+          url: "/dashboard/confirm-booking",
           permission: 'booking.list'
         },
         {
           title: "Pending Booking List",
           url: "/dashboard/pending-booking-list",
           permission: 'booking.approval'
+        },
+        {
+          title: "Cancelled Booking List",
+          url: "/dashboard/cancelled-booking-list",
+          permission: 'booking.cancel'
         },
       ],
     },

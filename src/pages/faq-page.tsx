@@ -1,6 +1,8 @@
 import { ChevronDown, ChevronUp, Mail, Phone } from "lucide-react";
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+import { Button } from "../components/ui/button";
 
 const faqs = [
     {
@@ -69,9 +71,11 @@ const generalFaqs = [
 function FaqSection({
     title,
     items,
+    bg
 }: {
     title: string;
     items: { question: string; answer: string }[];
+    bg:boolean
 }) {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -80,7 +84,7 @@ function FaqSection({
     };
 
     return (
-        <section className="py-16 px-6 flex flex-col items-center">
+        <section className={`py-15 px-6 flex flex-col items-center ${bg==true? 'bg-secondary' :''}`}>
             <h2 className="text-2xl md:text-3xl font-bold text-blue-950 mb-10">
                 {title}
             </h2>
@@ -144,29 +148,29 @@ export default function FaqPage() {
                 <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
             </Helmet>
             {/* Hero Section */}
-            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
+            <section className="relative bg-blue-900 text-primary-foreground py-20 md:h-92">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    className="absolute inset-0 bg-cover bg-center opacity-80"
                     style={{
-                        backgroundImage: "url('https://placehold.co/1920x1080.png')",
+                        backgroundImage: "url('/1250_368/FAQ-Frequently-Asked-Questions.png')",
                     }}
                     data-ai-hint="industrial machinery"
                 ></div>
 
-                <div className="relative flex flex-col gap-5 justify-center items-center text-center">
+                <div className="relative flex flex-col gap-5 justify-center items-center text-center top-1/2 left-1/2 -translate-1/2">
                     <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight">
                         Frequently Asked Questions
                     </h1>
-                    <p className="max-w-3xl mx-auto text-lg md:text-xl text-primary-foreground/80">
+                    <p className="max-w-3xl mx-auto text-lg md:text-xl font-bold">
                         Find answers to common questions about our platform and services.
                     </p>
                 </div>
             </section>
 
             {/* FAQ Sections */}
-            <FaqSection title="For Customers" items={faqs} />
-            <FaqSection title="For Equipment Owners & Vendors" items={vendorFaqs} />
-            <FaqSection title="General" items={generalFaqs} />
+            <FaqSection title="For Customers" items={faqs} bg={false}/>
+            <FaqSection title="For Equipment Owners & Vendors" items={vendorFaqs} bg={true} />
+            <FaqSection title="General" items={generalFaqs} bg={false}/>
 
             <section className="bg-secondary py-16 px-6 flex flex-col items-center text-center">
                 <h2 className="text-2xl md:text-3xl font-bold text-blue-950 mb-3">
@@ -176,24 +180,28 @@ export default function FaqPage() {
                     Our team is here to help. Get in touch with us for any specific inquiries.
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                     {/* Email Button */}
-                    <a
-                        href="mailto:info@rentoconnect.com"
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-950 text-white rounded-lg hover:bg-blue-800 transition-all duration-200"
+                    <Button variant={"custom"}>
+                    <Link
+                        to="mailto:info@rentoconnect.com"
+                        className="flex items-center gap-2"
                     >
                         <Mail size={18} />
                         Email Us
-                    </a>
+                    </Link>
+                    </Button>
 
                     {/* Call Button */}
-                    <a
-                        href="tel:+919876543210"
-                        className="flex items-center gap-2 px-6 py-3 bg-white text-blue-950 border border-gray-300 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                      <Button variant={"custom"}>
+                    <Link
+                        to="tel:+919876543210"
+                        className="flex items-center gap-2"
                     >
                         <Phone size={18} />
                         Call Us
-                    </a>
+                    </Link>
+                    </Button>
                 </div>
             </section>
             

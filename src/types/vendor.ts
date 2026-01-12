@@ -1,4 +1,5 @@
 export type Vendor = {
+    length: number;
     id?: string | null;
     name?: string | null;
     contact?: string;
@@ -19,4 +20,11 @@ export type Vendor = {
     id_proof?: any | string;
     role?: string;
     data?:{category:string,location:string};
+
+};
+
+export type VendorRemark = {
+    id?: string | null;            
+    vendor_id?: string | null;            
+    remark?: string | null; 
 };

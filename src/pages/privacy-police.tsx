@@ -26,27 +26,27 @@ function PrivacyPolice() {
                 <meta name="twitter:description" content="Rento Connect Equipment Experts Mobility" />
                 <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
             </Helmet>
-            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
+            <section className="relative bg-blue-900 text-primary-foreground py-20 md:h-92">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    className="absolute inset-0 bg-cover bg-center opacity-70"
                     style={{
-                        backgroundImage: "url('https://placehold.co/1920x1080.png')",
+                        backgroundImage: "url('/1250_368/Privacy-Policy.png')",
                     }}
                     data-ai-hint="industrial machinery"
                 ></div>
 
-                <div className="relative flex flex-col gap-5 justify-center items-center text-center">
+                <div className="relative flex flex-col gap-5 justify-center items-center text-center top-1/2 left-1/2 -translate-1/2">
                     <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight">
                     Privacy Policy
                     </h1>
 
-                    <p className="max-w-3xl mx-auto text-lg md:text-xl text-primary-foreground/80">
+                    <p className="max-w-3xl mx-auto text-lg md:text-xl font-bold">
                        Your privacy is important to us.
                     </p>
                 </div>
             </section>
 
-            <section className="flex flex-col px-4 py-10 sm:px-8 max-w-5xl md:mx-auto bg-white rounded-2xl shadow-sm gap-5 my-14 mx-2">
+            <section className="flex flex-col px-4 py-10 sm:px-8 max-w-5xl md:mx-auto bg-white rounded-2xl shadow-sm gap-5 my-5 mx-2">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
                     Privacy Policy
                 </h2>

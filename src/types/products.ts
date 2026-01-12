@@ -5,8 +5,8 @@ export type Product = {
     sub_category?: string ;
     product_name?: string;
     location?: string;
-    price_hour?: number | string;
-    price_day?: number | string;
+    price_hour?:  string;
+    price_day?: string;
     slug?: string;
     description?: string;
     product_image?: any | string;

@@ -7,10 +7,8 @@ import Editor from "@monaco-editor/react";
 import "quill/dist/quill.snow.css";
 import "quill-better-table/dist/quill-better-table.css";
 
-/* ---------------- REGISTER MODULES ONCE ---------------- */
 Quill.register("modules/better-table", QuillBetterTable, true);
 
-// Disable sanitization (keep styles)
 const Clipboard = Quill.import("modules/clipboard") as any;
 class CustomClipboard extends Clipboard {
   sanitize(html: string) {
@@ -20,34 +18,18 @@ class CustomClipboard extends Clipboard {
 Quill.register("modules/clipboard", CustomClipboard, true);
 
 interface TextEditorProps {
-  value: string;
+  value?: string;
   onChange: (html: string) => void;
 }
 
-export default function TextEditor({ value, onChange }: TextEditorProps) {
+export default function TextEditor({ value = "", onChange }: TextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const initialized = useRef(false);
 
   const [showCode, setShowCode] = useState(false);
-  const [codeValue, setCodeValue] = useState(value || "");
-
-  /* ---------------- TOGGLE HTML MODE ---------------- */
-  const toggleCodeView = () => {
-    if (!quillRef.current) return;
-
-    if (!showCode) {
-      // Editor → Code
-      setCodeValue(quillRef.current.root.innerHTML);
-    } else {
-      // Code → Editor
-      quillRef.current.clipboard.dangerouslyPasteHTML(codeValue, "silent");
-      onChange(codeValue);
-    }
-
-    setShowCode(prev => !prev);
-  };
+  const [codeValue, setCodeValue] = useState(value);
 
   /* ---------------- INIT QUILL (ONCE) ---------------- */
   useEffect(() => {
@@ -60,21 +42,7 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
       modules: {
         toolbar: toolbarRef.current,
         clipboard: { matchVisual: false },
-        "better-table": {
-          operationMenu: {
-            items: {
-              insertColumnRight: { text: "Insert Column Right" },
-              insertColumnLeft: { text: "Insert Column Left" },
-              insertRowUp: { text: "Insert Row Up" },
-              insertRowDown: { text: "Insert Row Down" },
-              deleteColumn: { text: "Delete Column" },
-              deleteRow: { text: "Delete Row" },
-              deleteTable: { text: "Delete Table" },
-              mergeCells: { text: "Merge Cells" },
-              unmergeCells: { text: "Unmerge Cells" },
-            },
-          },
-        },
+        "better-table": {},
         keyboard: {
           bindings: QuillBetterTable.keyboardBindings,
         },
@@ -83,46 +51,36 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
 
     quillRef.current = quill;
 
-    // Sync editor → parent
-    quill.on("text-change", () => {
-      const html = quill.root.innerHTML;
-      setCodeValue(html);
-      onChange(html);
-    });
-
-    // Initial value
+    // ✅ initial value ONLY once
     if (value) {
       quill.clipboard.dangerouslyPasteHTML(value, "silent");
       setCodeValue(value);
     }
 
-    // Custom table button
-    const tableBtn = toolbarRef.current.querySelector(".ql-table");
-    tableBtn?.addEventListener("click", e => {
-      e.preventDefault();
-      const table = quill.getModule("better-table") as any;
-      table.insertTable(3, 3);
+    // ✅ single source of truth
+    quill.on("text-change", () => {
+      const html = quill.root.innerHTML;
+      setCodeValue(html);
+      onChange(html);
     });
-
-    return () => {
-      quill.off("text-change");
-    };
   }, []);
 
-  /* ---------------- EXTERNAL VALUE SYNC ---------------- */
-  useEffect(() => {
+  /* ---------------- TOGGLE HTML MODE ---------------- */
+  const toggleCodeView = () => {
     if (!quillRef.current) return;
 
-    if (value !== quillRef.current.root.innerHTML) {
-      quillRef.current.clipboard.dangerouslyPasteHTML(value || "", "silent");
-      setCodeValue(value || "");
+    if (!showCode) {
+      setCodeValue(quillRef.current.root.innerHTML);
+    } else {
+      quillRef.current.clipboard.dangerouslyPasteHTML(codeValue, "silent");
+      onChange(codeValue);
     }
-  }, [value]);
 
-  /* ---------------- UI ---------------- */
+    setShowCode(prev => !prev);
+  };
+
   return (
-    <div style={{ display: "flex", gap: "20px" }}>
-      {/* WYSIWYG */}
+    <div style={{ display: "flex", gap: 20 }}>
       <div style={{ flex: 1 }}>
         <div
           onClick={toggleCodeView}
@@ -132,7 +90,6 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
             background: "#0f172a",
             color: "#fff",
             borderRadius: 8,
-            border: "none",
             cursor: "pointer",
             width:"max-content"
           }}
@@ -140,7 +97,6 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
           {showCode ? "Apply HTML & Close" : "Edit HTML"}
         </div>
 
-        {/* Toolbar */}
         <div ref={toolbarRef} className="ql-toolbar ql-snow">
           <span className="ql-formats">
             <button className="ql-bold" />
@@ -173,11 +129,10 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
           </span>
         </div>
 
-        {/* Editor */}
         <div
           ref={editorRef}
           style={{
-            minHeight: 350,
+            height:"auto",
             border: "1px solid #e5e7eb",
             borderTop: "none",
             borderRadius: "0 0 10px 10px",
@@ -185,21 +140,15 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
         />
       </div>
 
-      {/* HTML CODE (MONACO) */}
       {showCode && (
-        <div style={{ width: "45%", height: "420px" }}>
+        <div style={{ width: "45%", height: 420 }}>
           <Editor
             height="100%"
             language="html"
             theme="vs-dark"
             value={codeValue}
-            onChange={(val) => setCodeValue(val || "")}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 13,
-              wordWrap: "on",
-              automaticLayout: true,
-            }}
+            onChange={(v) => setCodeValue(v || "")}
+            options={{ minimap: { enabled: false } }}
           />
         </div>
       )}

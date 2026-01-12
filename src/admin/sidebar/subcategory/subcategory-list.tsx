@@ -135,14 +135,22 @@ export default function CategoryList() {
       },
     },
     {
+      accessorKey: "price_perhour",
+      header: () => <div>Price Per Hour</div>,
+    },
+    {
+      accessorKey: "price_perday",
+      header: () => <div>Price Per Day</div>,
+    },
+    {
       accessorKey: "active",
       header: () => <div>Status</div>,
       cell: ({ row }) => {
         const isActive = row.getValue("active") == 1;
         return (
-          <Button className={`px-3 py-1 text-white rounded cursor-not-allowed ${isActive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}`}>
+          <div className={`px-3 py-2 font-semibold text-white rounded ${isActive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}`}>
             {isActive ? "Active" : "Inactive"}
-          </Button>
+          </div>
         );
       },
     },

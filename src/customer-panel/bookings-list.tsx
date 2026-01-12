@@ -28,7 +28,9 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import {  getVendorInfo } from "../utils/vendor-utils";
+import { getRemarkString, getVendorInfo } from "../utils/vendor-utils";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { GoDash } from "react-icons/go";
 
 export default function CustomerBookingList() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -39,19 +41,43 @@ export default function CustomerBookingList() {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const user=getVendorInfo();
+    const user = getVendorInfo();
     const { bookings, isLoading, mutate } = useGetCustomerBookingList(Number(user?.id));
+    const [openCancelDialog, setOpenCancelDialog] = React.useState(false);
+    const [selectedBooking, setSelectedBooking] = React.useState<Booking | null>(null);
+    const [reason, setReason] = React.useState("");
+
 
     // 🧹 Deletion logic (with revalidation)
-    async function handleDelete(id: number) {
-        setDeletingId(id); // mark this booking as being deleted
+    async function handleConfirmCancel() {
+        if (!selectedBooking?.id) return;
+
+        if (!reason.trim()) {
+            alert("Please enter cancellation reason");
+            return;
+        }
+
+        setDeletingId(selectedBooking.id);
+
+        const payload = {
+            remark: getRemarkString(
+                "Cancelled",
+                user?.name || "Unknown"
+            ),
+            reason,
+        };
+
         try {
-            await deleteBooking(id);
-            await mutate(); // refresh table
+            await deleteBooking(selectedBooking.id, payload);
+            setOpenCancelDialog(false);
+            await mutate(); // refresh list
+
+            setSelectedBooking(null);
+            setReason("");
         } catch (error) {
             console.error("Delete failed:", error);
         } finally {
-            setDeletingId(null); // reset
+            setDeletingId(null);
         }
     }
 
@@ -104,16 +130,29 @@ export default function CustomerBookingList() {
             cell: ({ row }) => <div>{row.getValue("endDate")}</div>,
         },
         {
-            accessorKey: "active",
+            accessorKey: "status",
             header: () => <div>Status</div>,
             cell: ({ row }) => {
-                const isActive = row.getValue("active") == 1;
+                const active = row.original.active;
+                const deleted = row.original.deleted;
+
+                let label = "Pending";
+                let className = "bg-gray-500";
+
+                if (Number(deleted) === 1) {
+                    label = "Cancelled";
+                    className = "bg-red-500";
+                } else if (Number(active) === 1) {
+                    label = "Approval";
+                    className = "bg-green-500";
+                }
+
                 return (
-                    <Button
-                        className={`px-3 py-1 text-white rounded bg-green-500 hover:bg-green-500 cursor-default`}
+                    <div
+                        className={`px-1 py-2 text-white rounded text-center font-semibold ${className}`}
                     >
-                        {isActive ? "Approval" : "Pending"}
-                    </Button>
+                        {label}
+                    </div>
                 );
             },
         },
@@ -122,26 +161,29 @@ export default function CustomerBookingList() {
             header: "Actions",
             cell: ({ row }) => {
                 const booking = row.original;
-                const isDeleting = deletingId === booking.id;
+
+                // ❌ Already cancelled → show "-"
+                if (Number(booking.deleted) === 1) {
+                    return <div className="flex justify-center mr-5"><GoDash size={24}/></div>;
+                }
+
+                // ✅ Not deleted → show Cancel button
                 return (
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={() => handleDelete(Number(booking.id))}
-                            variant="destructive"
-                            disabled={isDeleting}
-                        >
-                            {isDeleting ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="animate-spin w-4 h-4" /> Cancelling...
-                                </span>
-                            ) : (
-                                "Cancel"
-                            )}
-                        </Button>
-                    </div>
+                    <Button
+                        variant="destructive"
+                        onClick={() => {
+                            setSelectedBooking(booking);
+                            setReason("");
+                            setOpenCancelDialog(true);
+                        }}
+                    >
+                        Cancel
+                    </Button>
                 );
             },
-        },
+        }
+
+
     ];
 
     const table = useReactTable({
@@ -173,6 +215,47 @@ export default function CustomerBookingList() {
     return (
         <div className="w-full p-4 bg-white/30 py-5 px-5 md:px-10" >
             <h2 className="text-2xl font-semibold">Booking List</h2>
+            <Dialog open={openCancelDialog} onOpenChange={setOpenCancelDialog}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Cancel Booking</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-2">
+                        <Label>Cancellation Reason</Label>
+                        <Input
+                            placeholder="Enter reason"
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                        />
+                    </div>
+
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setOpenCancelDialog(false)}
+                        >
+                            Close
+                        </Button>
+
+                        <Button
+                            variant="destructive"
+                            onClick={handleConfirmCancel}
+                            disabled={deletingId === selectedBooking?.id}
+                        >
+                            {deletingId === selectedBooking?.id ? (
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Cancelling...
+                                </span>
+                            ) : (
+                                "Confirm Cancel"
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* Filter + Columns */}
             <div className="flex items-center py-4 gap-4">
                 <Input

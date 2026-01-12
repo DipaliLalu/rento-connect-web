@@ -1,5 +1,13 @@
-import { FaStar } from "react-icons/fa6"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
+import { useEffect, useRef, useState } from "react";
+import Autoplay from "embla-carousel-autoplay";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "../ui/carousel";
+
+import type { CarouselApi } from "../ui/carousel";
 
 const testimonials = [
   {
@@ -7,67 +15,108 @@ const testimonials = [
     name: "JCB Vendor",
     location: "Vadodara",
     rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=500&q=60",
   },
   {
     text: "RentoConnect helped me earn from idle machines without any hassle.",
     name: "Equipment Owner",
     location: "Gujarat",
     rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=500&q=60",
   },
   {
     text: "Their response time and support made our shutdown project smooth.",
     name: "Rental Partner",
     location: "Surat",
     rating: 4,
+    image:
+      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=500&q=60",
   },
+];
 
-]
+export default function Testimonials() {
+  const autoplay = useRef(
+    Autoplay({
+      delay: 3000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    })
+  );
 
-function Testimonials() {
+  const [api, setApi] = useState<CarouselApi | null>(null);
+  const [active, setActive] = useState(0);
+
+  // ✅ Sync active dot with carousel
+  useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setActive(api.selectedScrollSnap());
+    };
+
+    onSelect(); // initial sync
+    api.on("select", onSelect);
+
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
   return (
-    <section className="flex flex-col gap-5 text-center mt-10 px-10 py-20">
-      <h2 className="text-4xl font-bold tracking-tight text-blue-950">Client & Partner Testimonials</h2>
-      <p className="text-[var(--color-muted-foreground)]">
-        Real feedback from our users:
-      </p>
+    <section className="py-20 px-4 bg-[url('/bg-texture.jpg')] bg-cover">
+      <h2 className="text-center text-3xl font-bold mb-10 text-blue-950">
+        Love From Clients
+      </h2>
+
       <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="w-full max-w-5xl mx-auto relative"
+        plugins={[autoplay.current]}
+        opts={{ loop: true }}
+        setApi={setApi}
+        className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg py-7"
       >
-        <CarouselContent className="-ml-4">
+        <CarouselContent>
           {testimonials.map((item, index) => (
-            <CarouselItem
-              key={index}
-              className="basis-full md:basis-1/2 lg:basis-1/2 pl-4"
-            >
-              <div className="p-6 bg-white rounded-xl shadow-sm border text-center flex flex-col justify-between h-full">
-                <p className="italic text-gray-600 mb-4">
-                  "{item.text}"
-                </p>
-                <div className="flex justify-center mb-3">
-                  {Array.from({ length: item.rating }).map((_, i) => (
-                    <FaStar className="text-yellow-500" size={20} key={i}/>
-                  ))}
+            <CarouselItem key={index}>
+              <div className="px-16 justify-center flex flex-col md:flex-row gap-6 items-center">
+                {/* Image */}
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-48 h-38 rounded-xl object-cover"
+                />
+
+                {/* Content */}
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-xl font-semibold mb-2">
+                    {item.name}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {item.text}
+                  </p>
                 </div>
-                <h3 className="font-semibold text-lg">
-                  {item.name}
-                </h3>
-                <p className="text-sm text-gray-500">{item.location}</p>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
+        {/* ✅ Clickable Dots */}
+        <div className="flex justify-end gap-2 mt-4 pr-6">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => api?.scrollTo(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`h-1.5 w-6 rounded-full transition-all duration-300 ${
+                active === i
+                  ? "bg-blue-900 scale-110"
+                  : "bg-orange-300 hover:bg-orange-500"
+              }`}
+            />
+          ))}
+        </div>
 
-        {/* Responsive arrow positioning */}
-        <CarouselPrevious className="left-2 sm:left-[-3rem]" />
-        <CarouselNext className="right-2 sm:right-[-3rem]" />
       </Carousel>
-
     </section>
-  )
+  );
 }
-
-export default Testimonials

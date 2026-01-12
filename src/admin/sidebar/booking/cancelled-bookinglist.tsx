@@ -26,12 +26,15 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
-import { deleteBooking, useGetActiveBookingList } from "../../../actions/booking";
+import { createBookingRemark, useGetBookingRemark, useGetCancelBookingList } from "../../../actions/booking";
 import type { Booking } from "../../../types/booking";
 import { getUserInfo } from "../../../utils/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import { getRemarkString } from "../../../utils/vendor-utils";
+import BookingDetailDialog from "./booking-detail-dialog";
 
 
-export default function ActiveBookinglist() {
+export default function CancelledBookingList() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         [],
@@ -39,7 +42,7 @@ export default function ActiveBookinglist() {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const { bookings, isLoading, mutate } = useGetActiveBookingList();
+    const { bookings, isLoading, mutate } = useGetCancelBookingList();
     const user = getUserInfo();
     // const navigate = useNavigate();
 
@@ -86,13 +89,37 @@ export default function ActiveBookinglist() {
 
         didSetDefault.current = true; // prevent future overrides
     }, [categories, userRoles]);
+    React.useEffect(() => {
+        mutate();
+    }, []);
 
     // 🧹 Deletion logic (with revalidation)
-    async function handleDelete(id: number) {
-        await deleteBooking(id);
-        await mutate(); // refetch SWR
-    }
+    // async function handleDelete(id: number) {
+    //     await deleteBooking(id);
+    //     await mutate(); // refetch SWR
+    // }
+    const [viewBooking, setViewBooking] = React.useState(false);
+    const [bookingDetail, setBookingDetail] = React.useState<Booking | null>(null);
 
+    async function handleBookingView(booking: Booking) {
+        setBookingDetail(booking);
+        setViewBooking(true);
+
+        const action = "View Cancelled Details";
+        const remark = getRemarkString(
+            action,
+            user?.data?.username || "Unknown"
+        );
+
+        try {
+            await createBookingRemark({
+                booking_id: booking.id as number,
+                remark,
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
     const columns: ColumnDef<Booking>[] = [
         {
             accessorKey: "id",
@@ -141,19 +168,16 @@ export default function ActiveBookinglist() {
             cell: ({ row }) => <div>{row.getValue("endDate")}</div>,
         },
         {
-            accessorKey: "active",
+            accessorKey: "deleted",
             header: () => <div>Status</div>,
             cell: ({ row }) => {
-                const isActive = row.getValue("active") == 1;
+                const isActive = row.getValue("deleted") == 1;
                 return (
-                    <Button
-                        className={`px-3 py-1 text-white rounded cursor-not-allowed ${isActive
-                            ? "bg-green-500 hover:bg-green-600"
-                            : "bg-red-500 hover:bg-red-600"
-                            }`}
+                    <div
+                        className={`px-3 py-2 font-semibold text-white rounded bg-red-500`}
                     >
-                        {isActive ? "Active" : "Inactive"}
-                    </Button>
+                        {isActive ? "Cancelled" : "Active"}
+                    </div>
                 );
             },
         },
@@ -161,19 +185,73 @@ export default function ActiveBookinglist() {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const vendor = row.original;
+                const booking = row.original;
                 return (
                     <div className="flex gap-2">
                         <Button
-                            onClick={() => handleDelete(Number(vendor.id))}
-                            variant="destructive"
+                            onClick={() => handleBookingView(booking)}
+                            variant="outline"
                         >
-                            Delete
+                            view Details
                         </Button>
                     </div>
                 );
             },
         },
+        {
+            id: "remark",
+            header: "Remark",
+            cell: ({ row }) => {
+                const vendorId = Number(row.original.id);
+
+                const {
+                    vendorRemark,
+                    isLoading,
+                    mutate,
+                } = useGetBookingRemark(vendorId);
+
+                return (
+                    <Popover
+                        onOpenChange={(open) => {
+                            if (open) {
+                                mutate(); // 🔥 refetch latest remarks
+                            }
+                        }}
+                    >
+                        <PopoverTrigger asChild>
+                            <Button size="sm" variant="outline">
+                                View Remarks
+                            </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-96 max-h-64 overflow-y-auto">
+                            <h4 className="font-semibold mb-2 text-sm">
+                                Booking Remarks
+                            </h4>
+
+                            {isLoading ? (
+                                <div className="text-sm">Loading...</div>
+                            ) : Array.isArray(vendorRemark) && vendorRemark.length > 0 ? (
+                                <div className="space-y-2">
+                                    {vendorRemark.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className="p-2 border rounded text-sm bg-muted"
+                                        >
+                                            {item.remark}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-muted-foreground">
+                                    No remarks found
+                                </div>
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                );
+            },
+        }
     ];
 
     const table = useReactTable({
@@ -204,6 +282,11 @@ export default function ActiveBookinglist() {
 
     return (
         <div className="w-full p-4">
+            <BookingDetailDialog
+                open={viewBooking}
+                onClose={() => setViewBooking(false)}
+                booking={bookingDetail}
+            />
             {/* Filter + Columns */}
             <div className="flex items-center py-4 gap-4">
 

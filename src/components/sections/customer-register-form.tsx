@@ -36,10 +36,14 @@ const formSchema = z.object({
     location: z.string().min(1, "Location is required"),
     service_frequency: z.enum(["one-time", "recurring", "project-based"]),
 });
+type AlertType = "success" | "error";
 
 export default function CustomerRegistrationForm() {
     const { category } = useGetCategory();
-    const [message, setMessage] = useState<object | null>(null);
+    const [alert, setAlert] = useState<{
+        message: string;
+        type: AlertType;
+    } | null>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -76,12 +80,18 @@ export default function CustomerRegistrationForm() {
                 }
             }
 
-            await registerCustomer(formData);
+            const res = await registerCustomer(formData);
             reset();
-            setMessage(null);
+            setAlert({
+                message: res.message,
+                type: "success",
+            });
         } catch (err: any) {
             console.error("Failed to submit customer:", err);
-            setMessage(err?.message);
+            setAlert({
+                message: err?.message || "Login failed",
+                type: "error",
+            });
         }
     };
 
@@ -89,13 +99,13 @@ export default function CustomerRegistrationForm() {
     return (
         <Form {...form}>
 
-            {message ? (
+            {alert?.message ? (
                 <Alert variant="destructive" className="shadow-md">
                     {/* Close Button */}
                     <button
                         type="button"
                         onClick={() => {
-                            setMessage(null)
+                           setAlert(null);
                             reset();
                         }}
                         className="absolute md:-top-36 -top-44 min-[375px]:-top-40 rounded-full right-1 text-xl"
@@ -103,7 +113,7 @@ export default function CustomerRegistrationForm() {
                     >
                         <IoIosCloseCircleOutline className='cursor-pointer text-slate-800' size={28} />
                     </button>
-                    {Object.entries(message).map(([key, value]) => (
+                    {Object.entries(alert?.message).map(([key, value]) => (
                         <AlertDescription key={key} className="capitalize font-semibold text-lg">
                             {value}
                         </AlertDescription>

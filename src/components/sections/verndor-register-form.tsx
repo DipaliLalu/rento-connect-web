@@ -39,10 +39,14 @@ const formSchema = z.object({
         ),
 
 });
+type AlertType = "success" | "error";
 
 export default function VendorRegistrationForm() {
     const { category } = useGetCategory();
-    const [message, setMessage] = useState<object | null>(null);
+    const [alert, setAlert] = useState<{
+        message: string;
+        type: AlertType;
+    } | null>(null);
     // const [slug,] = useState<string | null>(category?.[0]?.slug || null);
     // const { subcategory } = useGetSubCategoryWithSlug(slug);
 
@@ -81,25 +85,31 @@ export default function VendorRegistrationForm() {
                     formData.append(key, data[key as keyof typeof data]);
                 }
             }
-            await registerVendor(formData);
+            const res = await registerVendor(formData);
             reset();
-            setMessage(null);
+            setAlert({
+                message: res.message,
+                type: "success",
+            });
         } catch (err: any) {
             console.error("Failed to submit vendor:", err);
-            setMessage(err?.message);
+            setAlert({
+                message: err?.message || "Login failed",
+                type: "error",
+            });
         }
     };
 
 
     return (
         <Form {...form}>
-            {message ? (
-                <Alert variant="destructive" className='shadow-md'>
+            {alert?.message ? (
+                <Alert variant={alert.type === "success" ? "default" : "destructive"} className='shadow-md'>
                     {/* Close Button */}
                     <button
                         type="button"
                         onClick={() => {
-                            setMessage(null)
+                            setAlert(null);
                             reset();
                         }}
                         className="absolute md:-top-36 -top-44 min-[375px]:-top-40 rounded-full right-1 text-xl"
@@ -107,7 +117,7 @@ export default function VendorRegistrationForm() {
                     >
                         <IoIosCloseCircleOutline className='cursor-pointer text-slate-800' size={28} />
                     </button>
-                    {Object.entries(message).map(([key, value]) => (
+                    {Object.entries(alert.message).map(([key, value]) => (
                         <AlertDescription key={key} className="capitalize font-semibold text-lg">
                             {value}
                         </AlertDescription>

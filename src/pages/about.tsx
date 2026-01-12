@@ -1,6 +1,5 @@
-import { RiFocus2Line } from "react-icons/ri";
-import { IoMdEye } from "react-icons/io";
 import { Helmet } from "react-helmet-async";
+import Testimonials from "../components/sections/testimonials";
 
 function AboutPage() {
     const canonical = `${import.meta.env.VITE_URL}${location.pathname}`;
@@ -29,11 +28,11 @@ function AboutPage() {
                 <meta name="twitter:image" content={"https://rentoconnect.propheticdevelopers.com//3D-Effects.png"} />
             </Helmet>
 
-            <section className="relative bg-blue-900 text-primary-foreground py-20 md:py-32">
+            <section className="relative bg-blue-900 text-primary-foreground py-20 md:h-92">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    className="absolute inset-0 bg-cover bg-center opacity-70"
                     style={{
-                        backgroundImage: "url('https://placehold.co/1920x1080.png')",
+                        backgroundImage: "url('/1250_368/About-Us.png')",
                     }}
                     data-ai-hint="industrial machinery"
                 ></div>
@@ -43,13 +42,13 @@ function AboutPage() {
                         About Rento Connect
                     </h1>
 
-                    <p className="max-w-3xl mx-auto text-lg md:text-xl text-primary-foreground/80">
+                    <p className="max-w-3xl mx-auto text-lg md:text-xl font-bold">
                         We are revolutionizing the industrial services sector by connecting businesses with reliable, on-demand solutions.
                     </p>
                 </div>
             </section>
 
-            <section className="px-10 py-20">
+            <section className="px-10 py-15">
                 <div className="">
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         {/* left Image */}
@@ -59,7 +58,7 @@ function AboutPage() {
                                 loading="lazy"
                                 decoding="async"
                                 className="absolute inset-0 h-full w-full object-cover"
-                                src="https://placehold.co/600x400.png"
+                                src="/5_About_Us/Our Story.png"
                             />
                         </div>
                         {/* right Content */}
@@ -67,11 +66,11 @@ function AboutPage() {
                             <h2 className="font-headline text-3xl md:text-4xl font-bold text-blue-950">
                                 Our Story
                             </h2>
-                            <p className="mt-4 text-lg text-muted-foreground">
-                                Rento Connect was founded with a clear objective: to simplify the complex process of sourcing industrial services. Having experienced the challenges firsthand—unreliable vendors, opaque pricing, and logistical nightmares—our founders envisioned a digital platform that would bring efficiency, transparency, and trust to the B2B industrial ecosystem.
+                            <p className="mt-4 text-lg text-muted-foreground text-justify">
+                               Rento Connect was founded with a clear objective: to simplify the complex process of sourcing industrial services. Having experienced the challenges firsthand - unreliable vendors, opaque pricing, and logistical nightmares - our founders envisioned a digital platform that would bring efficiency, transparency, and trust to the B2B industrial ecosystem.
                             </p>
-                            <p className="mt-4 text-muted-foreground">
-                                Today, Rento Connect is a thriving marketplace that empowers businesses across India. We bridge the gap between demand and supply for heavy equipment, skilled experts, and workforce mobility, all through a seamless and user-friendly interface.
+                            <p className="mt-4 text-muted-foreground text-justify">
+                               Today, Rento Connect is a thriving marketplace that empowers businesses across India. We bridge the gap between demand and supply for heavy equipment, skilled experts, and workforce mobility, all through a seamless and user-friendly interface.
                             </p>
                         </div>
 
@@ -80,39 +79,59 @@ function AboutPage() {
             </section>
 
             <section className="relative py-20 md:py-32 px-5 md:px-10 bg-secondary">
-                <div className="grid grid-cols-1 md:grid-cols-2  gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div
-                        className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition cursor-pointer"
+                        className="bg-white rounded-xl shadow-md border-2 p-6 flex flex-col items-center text-center cursor-pointer group transition hover:-translate-y-2 hover:border-2 hover:border-blue-900 border-orange-500 duration-500"
                     >
-                        {/* Icon / Image */}
-                        <div className="w-14 h-14 flex items-center justify-center bg-orange-100 rounded-full mb-4">
-                            <RiFocus2Line size={30} className="text-primary" />
+                    
+                        <div className="w-20 h-20 flex items-center justify-center border-2 rounded-full mb-4 border-blue-900 group-hover:border-orange-500 overflow-hidden">
+                            <img
+                                src={"/Our-Mission1.png"}
+                                alt={"Our Mission"}
+                                className="w-20 h-20 object-contain group-hover:hidden duration-500 "
+                            />
+
+                            <img
+                                src={"/Our-Mission2.png"}
+                                alt={"Our Mission"}
+                                className="w-20 h-20 object-contain hidden scale-110 group-hover:block duration-500"
+                            />
                         </div>
 
-                        {/* Title */}
+                     
                         <h3 className="text-2xl font-bold text-blue-950">
                             Our Mission
                         </h3>
 
-                        {/* Description */}
-                        <p className="text-[var(--color-muted-foreground)] mt-2">
+                      
+                        <p className="text-[var(--color-muted-foreground)] mt-2 text-center">
                             To be India's most trusted and efficient B2B platform for on-demand industrial services, empowering businesses to achieve operational excellence by providing quick access to a verified network of equipment, experts, and mobility solutions.
                         </p>
                     </div>
                     <div
-                        className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition cursor-pointer"
+                        className="bg-white rounded-xl shadow-md border-2 p-6 flex flex-col items-center text-center cursor-pointer group transition hover:-translate-y-2 hover:border-2 hover:border-blue-900 border-orange-500 duration-500"
                     >
-                        {/* Icon / Image */}
-                        <div className="w-14 h-14 flex items-center justify-center bg-orange-100 rounded-full mb-4">
-                            <IoMdEye size={30} className="text-primary" />
+                    
+                       <div className="w-20 h-20 flex items-center justify-center border-2  rounded-full mb-4 border-blue-900 group-hover:border-orange-500 overflow-hidden">
+                            <img
+                                src={"/Our-Vision1.png"}
+                                alt={"Our Vision"}
+                                className="w-20 h-20 object-contain group-hover:hidden duration-500 "
+                            />
+
+                            <img
+                                src={"/Our-Vision2.png"}
+                                alt={"Our Vision"}
+                                className="w-20 h-20 object-contain scale-110 hidden group-hover:block duration-500"
+                            />
                         </div>
 
-                        {/* Title */}
+                     
                         <h3 className="text-2xl font-bold text-blue-950">
                             Our Vision
                         </h3>
 
-                        {/* Description */}
+                      
                         <p className="text-[var(--color-muted-foreground)] mt-2">
                             To build a comprehensive digital backbone for the industrial services sector, fostering growth, innovation, and partnership for every stakeholder in the ecosystem, from individual equipment owners to large-scale industrial enterprises.
                         </p>
@@ -120,7 +139,9 @@ function AboutPage() {
                 </div>
             </section>
 
-            <section className="flex flex-col gap-5 text-center py-20">
+            <Testimonials/>
+
+            {/* <section className="flex flex-col gap-5 text-center py-20">
                 <h2 className="font-headline text-3xl md:text-4xl font-bold text-blue-950">Meet Our Leadership</h2>
                 <p className="max-w-2xl mx-auto text-muted-foreground px-5">
                     The driving force behind our mission.
@@ -131,17 +152,17 @@ function AboutPage() {
                     <div
                         className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition hover:-translate-y-2 cursor-pointer"
                     >
-                        {/* Icon / Image */}
+                       
                         <div className="w-20 h-20 flex items-center justify-center bg-orange-100 rounded-full mb-4">
                             <img src="/100x100.png" alt="100x100 image" className="rounded-full" />
                         </div>
 
-                        {/* Title */}
+                     
                         <h3 className="text-xl font-bold text-blue-950">
                             Ravi Kumar
                         </h3>
 
-                        {/* Description */}
+                       
                         <p className="text-primary mt-2">
                             Founder & CEO
                         </p>
@@ -149,17 +170,17 @@ function AboutPage() {
                     <div
                         className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition hover:-translate-y-2 cursor-pointer"
                     >
-                        {/* Icon / Image */}
+                    
                         <div className="w-20 h-20 flex items-center justify-center bg-orange-100 rounded-full mb-4">
                             <img src="/100x100.png" alt="100x100 image" className="rounded-full" />
                         </div>
 
-                        {/* Title */}
+                     
                         <h3 className="text-xl font-bold text-blue-950">
                             Priya Singh
                         </h3>
 
-                        {/* Description */}
+                      
                         <p className="text-primary mt-2">
                             Chief Operating Officer
                         </p>
@@ -167,17 +188,17 @@ function AboutPage() {
                     <div
                         className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition hover:-translate-y-2 cursor-pointer"
                     >
-                        {/* Icon / Image */}
+                    
                         <div className="w-20 h-20 flex items-center justify-center bg-orange-100 rounded-full mb-4">
                             <img src="/100x100.png" alt="100x100 image" className="rounded-full" />
                         </div>
 
-                        {/* Title */}
+                     
                         <h3 className="text-xl font-bold text-blue-950">
                             Amit Patel
                         </h3>
 
-                        {/* Description */}
+                      
                         <p className="text-primary mt-2">
                             Head of Technology
                         </p>
@@ -185,17 +206,17 @@ function AboutPage() {
                     <div
                         className="bg-white rounded-xl shadow-md border p-6 flex flex-col items-center text-center hover:shadow-xl transition hover:-translate-y-2 cursor-pointer"
                     >
-                        {/* Icon / Image */}
+                    
                         <div className="w-20 h-20 flex items-center justify-center bg-orange-100 rounded-full mb-4">
                             <img src="/100x100.png" alt="100x100 image" className="rounded-full" />
                         </div>
 
-                        {/* Title */}
+                     
                         <h3 className="text-xl font-bold text-blue-950">
                             Sunita Sharma
                         </h3>
 
-                        {/* Description */}
+                      
                         <p className="text-primary mt-2">
                             Head of Vendor Relations
                         </p>
@@ -203,7 +224,8 @@ function AboutPage() {
 
 
                 </div>
-            </section>
+            </section> */}
+            
         </>
     )
 }

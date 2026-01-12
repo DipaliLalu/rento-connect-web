@@ -43,3 +43,25 @@ export function getVendorInfo(): Vendor | null {
   const decoded = decodeVendorToken(token);
   return decoded?.data ?? null;
 }
+
+export function getRemarkString(action: string, username: string) {
+  const now = new Date();
+
+  // IST time
+  const istTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+  );
+
+  // Time
+  const time = istTime.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  // Date
+  const date = istTime.toLocaleDateString("en-GB"); // dd/mm/yyyy
+
+  return `Time : ${time} IST | Date : ${date} | User Name : ${username} | User Performed Action : ${action}`;
+}
